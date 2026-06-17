@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PVP of Friends - Oficial</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon-blue: #00BCD4; --neon-pink: #FF4081; --dark-bg: #0D0D0D; --card-bg: #0a0a0a; --header-bg: #050505; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--dark-bg); color: #e0e0e0; overflow-x: hidden; }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* HEADER */
+        .main-header { background-color: var(--header-bg); padding: 15px 0; border-bottom: 2px solid var(--neon-pink); position: fixed; width: 100%; top: 0; z-index: 1000; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; width: 90%; max-width: 1200px; margin: 0 auto; }
+        .logo h1 { margin: 0; font-size: 1.5em; color: #fff; text-shadow: 0 0 10px var(--neon-blue); cursor: pointer; }
+        .main-nav ul { list-style: none; display: flex; gap: 20px; padding: 0; align-items: center; }
+        .main-nav a { color: #fff; text-decoration: none; font-weight: bold; font-size: 0.8em; cursor: pointer; }
+        .main-nav a:hover { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
+
+        /* CONTENEDORES Y DISEÑO */
+        .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 100px 0; }
+        .hidden { display: none !important; }
+        .section-title { text-align: center; font-size: 2.5em; margin-bottom: 40px; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
+
+        .hero-banner { height: 80vh; background: linear-gradient(rgba(0,0,0,0.6), var(--dark-bg)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .play-btn { background: var(--neon-pink); color: white; padding: 20px 50px; text-decoration: none; border-radius: 5px; box-shadow: 0 0 20px var(--neon-pink); font-family: 'Orbitron'; font-size: 1.5em; transition: 0.3s; }
+        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px var(--neon-pink); }
+
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: var(--card-bg); border: 1px solid #222; padding: 30px; border-radius: 15px; border-left: 4px solid var(--neon-blue); position: relative; }
+        .ability-list { list-style: none; padding: 0; margin-top: 15px; font-size: 0.9em; }
+        .ability-list li { margin-bottom: 5px; color: #aaa; }
+        .ability-list li::before { content: "▹ "; color: var(--neon-pink); }
+
+        /* RANKING */
+        .leaderboard-container { background: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; margin-bottom: 60px; }
+        .leaderboard-table { width: 100%; border-collapse: collapse; }
+        .leaderboard-table th { background: #111; color: var(--neon-blue); padding: 15px; text-align: left; }
+        .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
+
+        /* SISTEMA DE CUENTAS INTERFAZ */
+        .auth-box { max-width: 400px; margin: 150px auto; background: var(--card-bg); border: 1px solid #333; padding: 40px; border-radius: 15px; border-top: 4px solid var(--neon-pink); text-align: center; }
+        .auth-box input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; }
+        .btn { width: 100%; padding: 12px; background: var(--neon-pink); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; }
+        .btn:hover { opacity: 0.9; box-shadow: 0 0 10px var(--neon-pink); }
+
+        /* ENTORNO ADMINISTRADOR INTEGRADO */
+        .admin-panel { background: #111; border: 1px solid #333; border-radius: 15px; padding: 25px; margin-bottom: 40px; border-top: 4px solid var(--neon-blue); }
+        .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
+        .btn-group { display: flex; gap: 10px; margin-top: 8px; }
+        .btn-borr { background: #444; }
+        .btn-edit { background: var(--neon-blue); color: #000; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; }
+        .btn-del { background: #ff4444; color: #fff; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; margin-left: 5px; }
+        .status-tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight: bold; }
+        .tag-pub { background: #2ecc71; color: #000; }
+        .tag-borr { background: #f1c40f; color: #000; }
+        .admin-controls-inline { margin-top: 15px; display: flex; justify-content: flex-end; gap: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA PRINCIPAL -->
+    <header class="main-header hidden" id="site-header">
+        <div class="header-content">
+            <div class="logo" onclick="showSection('home')"><h1>PVP OF FRIENDS</h1></div>
+            <nav class="main-nav">
+                <ul id="main-menu">
+                    <li><a onclick="showSection('home')">INICIO</a></li>
+                    <li><a onclick="showSection('clases')">CLASES</a></li>
+                    <li><a onclick="showSection('blog')">BLOG</a></li>
+                    <li><a onclick="showSection('medios')">MEDIOS</a></li>
+                    <li id="menu-admin-btn" class="hidden"><a onclick="showSection('admin')" style="color: var(--neon-blue);">🛠️ PANEL ADMIN</a></li>
+                    <li><a onclick="logout()" style="color: #ff4444; margin-left:15px;">SALIR</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- PANTALLA DE AUTENTICACIÓN -->
+    <div id="auth-section" class="container">
+        <div class="auth-box" id="login-form">
+            <h2 style="color: #fff; font-size: 1.8em;">INICIAR SESIÓN</h2>
+            <input type="text" id="login-user" placeholder="Nombre de usuario">
+            <input type="password" id="login-pass" placeholder="Contraseña">
+            <button class="btn" onclick="login()">ENTRAR</button>
+            <p style="font-size: 0.85em; margin-top: 15px;">¿No tienes cuenta? <a onclick="toggleAuth(true)" style="color: var(--neon-blue); cursor: pointer; text-decoration: underline;">Regístrate aquí</a></p>
+        </div>
+
+        <div class="auth-box hidden" id="register-form">
+            <h2 style="color: #fff; font-size: 1.8em;">CREAR CUENTA</h2>
+            <input type="text" id="reg-user" placeholder="Elige un usuario">
+            <input type="password" id="reg-pass" placeholder="Escribe tu contraseña">
+            <button class="btn" style="background: var(--neon-blue);" onclick="register()">REGISTRARME</button>
+            <p style="font-size: 0.85em; margin-top: 15px;">¿Ya tienes cuenta? <a onclick="toggleAuth(false)" style="color: var(--neon-pink); cursor: pointer; text-decoration: underline;">Inicia sesión</a></p>
+        </div>
+    </div>
+
+    <!-- CONTENIDO GENERAL DEL SITIO -->
+    <div id="site-content" class="hidden">
+        
+        <!-- SECCIÓN INICIO -->
+        <div id="home-content">
+            <section class="hero-banner">
+                <h2 style="font-size: 4em; color:white; text-shadow: 0 0 20px var(--neon-blue);">PVP OF FRIENDS</h2>
+                <a href="#" id="play-btn" class="play-btn" target="_blank">JUGAR AHORA</a>
+            </section>
+            <div class="container">
+                <h2 class="section-title">TOP PLAYERS</h2>
+                <div class="leaderboard-container">
+                    <table class="leaderboard-table">
+                        <thead><tr><th>RANGO</th><th>PILOTO</th><th>NIVEL</th><th>BAJAS</th></tr></thead>
+                        <tbody id="leader-list">
+                            <tr><td style="color:gold">#1</td><td>Sombra_Neon</td><td>150</td><td>12,450</td></tr>
+                            <tr><td style="color:silver">#2</td><td>Vortex_Pilot</td><td>142</td><td>10,200</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <h2 class="section-title">Novedades</h2>
+                <div id="news-container" class="grid"></div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN CLASES -->
+        <div id="clases-content" class="container hidden">
+            <h2 class="section-title">Clases de Combate</h2>
+            <div id="classes-container" class="grid"></div>
+        </div>
+
+        <!-- SECCIÓN BLOG -->
+        <div id="blog-content" class="container hidden">
+            <h2 class="section-title">Diario de Desarrollo</h2>
+            <div id="blog-container"></div>
+        </div>
+
+        <!-- SECCIÓN MEDIOS -->
+        <div id="medios-content" class="container hidden">
+            <h2 class="section-title">Galería de Medios</h2>
+            <div id="gallery-container" class="grid"></div>
+        </div>
+
+        <!-- SECCIÓN PANEL DE ADMINISTRADOR -->
+        <div id="admin-content" class="container hidden">
+            <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">PANEL MAESTRO DE CONTROL</h2>
+            
+            <div class="admin-panel" style="border-top-color: #fff;">
+                <h3>🔗 CONFIGURACIÓN DEL SITIO</h3>
+                <input id="adm-game-url" placeholder="URL del juego en Roblox">
+                <button class="btn" style="background:#fff; color:#000;" onclick="saveGlobalConfig()">SINCRONIZAR LINK DEL JUEGO</button>
+            </div>
+
+            <div class="admin-panel">
+                <h3 id="form-title-classes">⚔️ GESTIÓN DE CLASES</h3>
+                <input type="hidden" id="edit-idx-classes" value="-1">
+                <input id="c-name" placeholder="Nombre de la clase">
+                <input id="c-desc" placeholder="Descripción">
+                <input id="c-skills" placeholder="Habilidades (separadas por comas)">
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveDataItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
+                    <button class="btn" onclick="saveDataItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: var(--neon-pink);">
+                <h3 id="form-title-news">📰 NOTICIAS Y NOVEDADES</h3>
+                <input type="hidden" id="edit-idx-news" value="-1">
+                <input id="n-title" placeholder="Título">
+                <textarea id="n-body" placeholder="Mensaje..."></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveDataItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:var(--neon-pink);" onclick="saveDataItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: #9b59b6;">
+                <h3 id="form-title-blog">✍️ ENTRADAS DEL BLOG</h3>
+                <input type="hidden" id="edit-idx-blog" value="-1">
+                <input id="b-title" placeholder="Título del Post">
+                <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveDataItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:#9b59b6;" onclick="saveDataItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: #f1c40f;">
+                <h3>🖼️ AÑADIR A LA GALERÍA</h3>
+                <input id="g-url" placeholder="URL directa de la imagen">
+                <button class="btn" style="background:#f1c40f; color:#000;" onclick="saveGalleryItem()">AÑADIR FOTO</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cuenta de Administrador Único por defecto
+        if (!localStorage.getItem('user_admin')) {
+            localStorage.setItem('user_admin', 'admin123'); 
+        }
+
+        function toggleAuth(showRegister) {
+            document.getElementById('login-form').classList.toggle('hidden', showRegister);
+            document.getElementById('register-form').classList.toggle('hidden', !showRegister);
+        }
+
+        function register() {
+            const user = document.getElementById('reg-user').value.trim().toLowerCase();
+            const pass = document.getElementById('reg-pass').value.trim();
+
+            if (!user || !pass) return alert("Completa todos los campos.");
+            if (user === 'admin') return alert("No puedes usar 'admin'.");
+            if (localStorage.getItem('user_' + user)) return alert("Este usuario ya existe.");
+
+            localStorage.setItem('user_' + user, pass);
+            alert("Cuenta de usuario creada.");
+            toggleAuth(false);
+        }
+
+        function login() {
+            const user = document.getElementById('login-user').value.trim().toLowerCase();
+            const pass = document.getElementById('login-pass').value.trim();
+
+            if (localStorage.getItem('user_' + user) === pass) {
+                sessionStorage.setItem('active_session', user);
+                loadInterface();
+            } else {
+                alert("Usuario o contraseña incorrectos.");
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('active_session');
+            location.reload();
+        }
+
+        function loadInterface() {
+            const currentUser = sessionStorage.getItem('active_session');
+            if (!currentUser) return;
+
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('site-header').classList.remove('hidden');
+            document.getElementById('site-content').classList.remove('hidden');
+
+            if (currentUser === 'admin') {
+                document.getElementById('menu-admin-btn').classList.remove('hidden');
+                document.getElementById('adm-game-url').value = localStorage.getItem('pvp_game_url') || '';
+            }
+
+            refreshSiteData();
+            showSection('home');
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('#site-content > div').forEach(p => p.classList.add('hidden'));
+            document.getElementById(id + '-content').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function refreshSiteData() {
+            const isAdmin = sessionStorage.getItem('active_session') === 'admin';
+            document.getElementById('play-btn').href = localStorage.getItem('pvp_game_url') || "#";
+            
+            const getAllItems = (k) => JSON.parse(localStorage.getItem(k)) || [];
+            
+            // Renderizar Noticias
+            document.getElementById('news-container').innerHTML = getAllItems('pvp_news').map((n, i) => {
+                if (n.status !== 'publicado' && !isAdmin) return '';
+                return `<div class="card">
+                    <h3>${n.title} ${n.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
+                    <p>${n.body}</p>
+                    ${isAdmin ? `<div class="admin-controls-inline"><button class="btn-edit" onclick="loadItemToEdit('pvp_news', ${i}, 'edit-idx-news')">EDITAR</button><button class="btn-del" onclick="deleteDataItem('pvp_news', ${i})">X</button></div>` : ''}
+                </div>`;
+            }).join('');
+
+            // Renderizar Clases
+            document.getElementById('classes-container').innerHTML = getAllItems('pvp_classes').map((c, i) => {
+                if (c.status !== 'publicado' && !isAdmin) return '';
+                return `<div class="card">
+                    <h3>${c.name} ${c.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
+                    <p style="color:#888">${c.desc}</p>
+                    <ul class="ability-list">${c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('')}</ul>
+                    ${isAdmin ? `<div class="admin-controls-inline"><button class="btn-edit" onclick="loadItemToEdit('pvp_classes', ${i}, 'edit-idx-classes')">EDITAR</button><button class="btn-del" onclick="deleteDataItem('pvp_classes', ${i})">X</button></div>` : ''}
+                </div>`;
+            }).join('');
+
+            // Renderizar Blog
+            document.getElementById('blog-container').innerHTML = getAllItems('pvp_blog').map((b, i) => {
+                if (b.status !== 'publicado' && !isAdmin) return '';
+                return `<div class="card" style="border-left-color:var(--neon-pink)">
+                    <h3>${b.title} ${b.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
+                    <p>${b.body}</p>
+                    ${isAdmin ? `<div class="admin-controls-inline"><button class="btn-edit" onclick="loadItemToEdit('pvp_blog', ${i}, 'edit-idx-blog')">EDITAR</button><button class="btn-del" onclick="deleteDataItem('pvp_blog', ${i})">X</button></div>` : ''}
+                </div>`;
+            }).join('');
+
+            // Renderizar Galería
+            document.getElementById('gallery-container').innerHTML = getAllItems('pvp_gallery').map((url, i) => `
+                <div style="height:250px; border-radius:15px; overflow:hidden; border:1px solid #222; position:relative;">
+                    <img src="${url}" style="width:100%; height:100%; object-fit:cover;">
+                    ${isAdmin ? `<button class="btn-del" style="position:absolute; top:10px; right:10px;" onclick="deleteDataItem('pvp_gallery', ${i})">X</button>` : ''}
+                </div>`).join('');
+        }
+
+        function saveGlobalConfig() {
+            localStorage.setItem('pvp_game_url', document.getElementById('adm-game-url').value);
+            alert("Link del juego actualizado.");
+            refreshSiteData();
+        }
+
+        function saveDataItem(key, obj, editIdxId, status) {
+            if (!obj.title && !obj.name) return alert("Rellena los campos obligatorios.");
+            obj.status = status;
+            let data = JSON.parse(localStorage.getItem(key)) || [];
+            const idx = parseInt(document.getElementById(editIdxId).value);
+            if (idx > -1) { data[idx] = obj; } else { data.push(obj); }
+            localStorage.setItem(key, JSON.stringify(data));
+            resetAdminForm(key, editIdxId);
+            refreshSiteData();
+            alert("Guardado.");
+        }
+
+        function saveGalleryItem() {
+            const url = document.getElementById('g-url').value;
+            if(!url) return;
+            let data = JSON.parse(localStorage.getItem('pvp_gallery')) || [];
+            data.push(url);
+            localStorage.setItem('pvp_gallery', JSON.stringify(data));
+            document.getElementById('g-url').value = '';
+            refreshSiteData();
+            alert("Imagen añadida.");
+        }
+
+        function loadItemToEdit(key, idx, editIdxId) {
+            showSection('admin');
+            let data = JSON.parse(localStorage.getItem(key)) || [];
+            let item = data[idx];
+            document.getElementById(editIdxId).value = idx;
+            if (key === 'pvp_classes') {
+                document.getElementById('c-name').value = item.name; document.getElementById('c-desc').value = item.desc; document.getElementById('c-skills').value = item.skills;
+            } else if (key === 'pvp_news') {
+                document.getElementById('n-title').value = item.title; document.getElementById('n-body').value = item.body;
+            } else if (key === 'pvp_blog') {
+                document.getElementById('b-title').value = item.title; document.getElementById('b-body').value = item.body;
+            }
+        }
+
+        function deleteDataItem(key, idx) {
+            if (!confirm("¿Eliminar elemento?")) return;
+            let data = JSON.parse(localStorage.getItem(key)) || [];
+            data.splice(idx, 1);
+            localStorage.setItem(key, JSON.stringify(data));
+            refreshSiteData();
+        }
+
+        function resetAdminForm(key, editIdxId) {
+            document.getElementById(editIdxId).value = "-1";
+            if (key === 'pvp_classes') {
+                document.getElementById('c-name').value = ''; document.getElementById('c-desc').value = ''; document.getElementById('c-skills').value = '';
+            } else if (key === 'pvp_news') {
+                document.getElementById('n-title').value = ''; document.getElementById('n-body').value = '';
+            } else if (key === 'pvp_blog') {
+                document.getElementById('b-title').value = ''; document.getElementById('b-body').value = '';
+            }
+        }
+
+        window.onload = function() {
+            const active = sessionStorage.getItem('active_session');
+            if (active) { loadInterface(); }
+        }
+    </script>
+</body>
+</html>
