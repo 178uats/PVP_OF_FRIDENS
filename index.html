@@ -29,6 +29,8 @@
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: var(--card-bg); border: 1px solid #222; padding: 30px; border-radius: 15px; border-left: 4px solid var(--neon-blue); position: relative; }
+        .card h3 { margin-top: 0; color: #fff; }
+        .ability-list { padding-left: 20px; margin-top: 10px; color: #aaa; }
         
         /* ESTILOS DE CLANES */
         .clan-badge { font-family: 'Orbitron'; font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
@@ -37,7 +39,7 @@
         .clan-espectro { background: #9b59b6; color: #fff; box-shadow: 0 0 8px #9b59b6; }
         .clan-ninguno { background: #444; color: #aaa; }
 
-        /* RANGOS EN CHAT Y LEADERBOARD */
+        /* RANGOS EN CHAT */
         .rank-badge { font-family: 'Orbitron'; font-size: 0.75em; padding: 2px 6px; border-radius: 4px; font-weight: bold; background: #222; color: #fff; border: 1px solid #444; }
 
         /* PERFIL DE USUARIO EN INICIO */
@@ -50,6 +52,10 @@
         .leaderboard-table th { background: #111; color: var(--neon-blue); padding: 15px; text-align: left; font-family: 'Orbitron'; }
         .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
         .row-admin-or { background: rgba(255, 64, 129, 0.08); border-left: 4px solid var(--neon-pink); }
+
+        /* GALERIA DE MEDIOS */
+        .media-card { background: #000; border: 1px solid #222; border-radius: 10px; overflow: hidden; position: relative; }
+        .media-card img { width: 100%; height: 200px; object-fit: cover; display: block; }
 
         /* INTERFAZ AUTENTICACIÓN */
         .auth-box { max-width: 400px; margin: 120px auto; background: var(--card-bg); border: 1px solid #333; padding: 40px; border-radius: 15px; border-top: 4px solid var(--neon-pink); text-align: center; }
@@ -75,6 +81,9 @@
         .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 8px; }
         .btn-borr { background: #444; }
+        .btn-edit { background: var(--neon-blue); color:#000; padding:4px 8px; font-size:0.8em; border:none; border-radius:4px; cursor:pointer;}
+        .btn-del { background: #ff4444; color:#fff; padding:4px 8px; font-size:0.8em; border:none; border-radius:4px; cursor:pointer; margin-left:5px;}
+        .status-tag { font-size:0.7em; padding:2px 6px; border-radius:4px; font-weight:bold; margin-left:10px; vertical-align:middle;}
     </style>
 </head>
 <body>
@@ -159,7 +168,7 @@
                     </table>
                 </div>
 
-                <h2 class="section-title" style="text-align: left; font-size: 2em;">Novedades</h2>
+                <h2 class="section-title" style="text-align: left; font-size: 2em;">Novedades del Campo de Batalla</h2>
                 <div id="news-container" class="grid"></div>
             </div>
         </div>
@@ -214,6 +223,46 @@
                 <input id="adm-game-url" placeholder="URL del juego en Roblox">
                 <button class="btn" style="background:#fff; color:#000;" onclick="saveGlobalConfig()">SINCRONIZAR LINK DEL JUEGO</button>
             </div>
+
+            <div class="admin-panel">
+                <h3 id="form-title-classes">⚔️ GESTIÓN DE CLASES</h3>
+                <input type="hidden" id="edit-idx-classes" value="-1">
+                <input id="c-name" placeholder="Nombre de la clase">
+                <input id="c-desc" placeholder="Descripción">
+                <input id="c-skills" placeholder="Habilidades (separadas por comas)">
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
+                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: var(--neon-pink);">
+                <h3 id="form-title-news">📰 NOTICIAS Y NOVEDADES</h3>
+                <input type="hidden" id="edit-idx-news" value="-1">
+                <input id="n-title" placeholder="Título">
+                <textarea id="n-body" placeholder="Mensaje..."></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: #9b59b6;">
+                <h3 id="form-title-blog">✍️ ENTRADAS DEL BLOG</h3>
+                <input type="hidden" id="edit-idx-blog" value="-1">
+                <input id="b-title" placeholder="Título del Post">
+                <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
+                <div class="btn-group">
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
+                </div>
+            </div>
+
+            <div class="admin-panel" style="border-top-color: #f1c40f;">
+                <h3>🖼️ AÑADIR A LA GALERÍA</h3>
+                <input id="g-url" placeholder="URL directa de la imagen">
+                <button class="btn" style="background:#f1c40f; color:#000;" onclick="saveGalleryItem()">AÑADIR FOTO</button>
+            </div>
         </div>
     </div>
 
@@ -231,7 +280,6 @@
             return badWords.some(word => cleanText.includes(word));
         }
 
-        // Sistema dinámico de Rangos según el Nivel
         function getPvpRange(level) {
             let lvl = parseInt(level) || 0;
             if (lvl >= 100) return "👑 Dios del PVP";
@@ -409,7 +457,6 @@
             }).join('');
         }
 
-        // --- SISTEMA DE CHAT CON RANGOS DINÁMICOS ---
         async function sendChatMessage() {
             const session = sessionStorage.getItem('active_session');
             const name = sessionStorage.getItem('display_name');
@@ -422,10 +469,7 @@
             let userClan = "Ninguno";
             let userLevel = 0;
             let dbUser = globalUsersList.find(u => u.username.toLowerCase() === session);
-            if(dbUser) {
-                userClan = dbUser.clan;
-                userLevel = dbUser.level || 0;
-            }
+            if(dbUser) { userClan = dbUser.clan; userLevel = dbUser.level || 0; }
 
             const newMsg = {
                 user: name,
@@ -447,11 +491,8 @@
             const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
 
             box.innerHTML = chatMessages.map(m => {
-                // Generar tag de rango en vivo según el nivel del mensaje
                 let rankTagHtml = `<span class="rank-badge">${getPvpRange(m.level)}</span>`;
-                if (m.isTracoAdmin) {
-                    rankTagHtml = '<span class="admin-tag">⚡ ADMIN ORIGINAL</span>';
-                }
+                if (m.isTracoAdmin) rankTagHtml = '<span class="admin-tag">⚡ ADMIN ORIGINAL</span>';
 
                 return `<div class="chat-msg">
                     <div class="content-area">
@@ -483,13 +524,75 @@
             fetchAllCloudData();
         }
 
+        // --- RENDERIZADORES ARREGLADOS (VOLVIERON A CARGAR TODO) ---
         function refreshSiteData() {
+            const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
             document.getElementById('play-btn').href = cloudData.config.pvp_game_url || "#";
+
+            // Mostrar Noticias
+            const newsBox = document.getElementById('news-container');
+            if(newsBox) {
+                newsBox.innerHTML = cloudData.pvp_news.map((n, i) => {
+                    if (!n) return ''; if (n.status !== 'publicado' && !isTraco) return '';
+                    return `<div class="card"><h3>${n.title} ${isTraco ? `<span class="status-tag" style="background:${n.status==='publicado'?'green':'orange'}">${n.status}</span>`:''}</h3><p>${n.body}</p></div>`;
+                }).join('');
+            }
+
+            // Mostrar Clases
+            const classesBox = document.getElementById('classes-container');
+            if(classesBox) {
+                classesBox.innerHTML = cloudData.pvp_classes.map((c, i) => {
+                    if (!c) return ''; if (c.status !== 'publicado' && !isTraco) return '';
+                    return `<div class="card"><h3>${c.name} ${isTraco ? `<span class="status-tag" style="background:${c.status==='publicado'?'green':'orange'}">${c.status}</span>`:''}</h3><p>${c.desc}</p><ul class="ability-list">${c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('')}</ul></div>`;
+                }).join('');
+            }
+
+            // Mostrar Blog
+            const blogBox = document.getElementById('blog-container');
+            if(blogBox) {
+                blogBox.innerHTML = cloudData.pvp_blog.map((b, i) => {
+                    if (!b) return ''; if (b.status !== 'publicado' && !isTraco) return '';
+                    return `<div class="card" style="margin-bottom:20px;"><h2>${b.title} ${isTraco ? `<span class="status-tag" style="background:${b.status==='publicado'?'green':'orange'}">${b.status}</span>`:''}</h2><p>${b.body}</p></div>`;
+                }).join('');
+            }
+
+            // Mostrar Galería de Fotos
+            const galleryBox = document.getElementById('gallery-container');
+            if(galleryBox) {
+                galleryBox.innerHTML = cloudData.pvp_gallery.map((imgUrl, i) => {
+                    if (!imgUrl) return '';
+                    return `<div class="media-card"><img src="${imgUrl}" alt="Captura PVP"></div>`;
+                }).join('');
+            }
         }
+
         async function saveGlobalConfig() {
             cloudData.config.pvp_game_url = document.getElementById('adm-game-url').value;
             await syncToFirebase('config'); alert("Link guardado."); fetchAllCloudData();
         }
+
+        async function saveFormItem(key, obj, editIdxId, status) {
+            obj.status = status;
+            cloudData[key].push(obj);
+            await syncToFirebase(key);
+            alert("Guardado correctamente en la Base de Datos.");
+            fetchAllCloudData();
+        }
+
+        async function saveGalleryItem() {
+            const url = document.getElementById('g-url').value.trim();
+            if(!url) return;
+            cloudData.pvp_gallery.push(url);
+            await syncToFirebase('pvp_gallery');
+            document.getElementById('g-url').value = '';
+            alert("Foto añadida con éxito.");
+            fetchAllCloudData();
+        }
+
+        window.onload = function() {
+            const active = sessionStorage.getItem('active_session');
+            if (active) { loadInterface(); }
+        };
     </script>
 </body>
 </html>
