@@ -23,7 +23,7 @@
         .hidden { display: none !important; }
         .section-title { text-align: center; font-size: 2.5em; margin-bottom: 40px; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
 
-        .hero-banner { height: 80vh; background: linear-gradient(rgba(0,0,0,0.6), var(--dark-bg)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .hero-banner { height: 60vh; background: linear-gradient(rgba(0,0,0,0.6), var(--dark-bg)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
         .play-btn { background: var(--neon-pink); color: white; padding: 20px 50px; text-decoration: none; border-radius: 5px; box-shadow: 0 0 20px var(--neon-pink); font-family: 'Orbitron'; font-size: 1.5em; transition: 0.3s; }
         .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px var(--neon-pink); }
 
@@ -44,6 +44,16 @@
         .auth-box input { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; background: var(--neon-pink); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; }
         .btn:hover { opacity: 0.9; box-shadow: 0 0 10px var(--neon-pink); }
+
+        /* CHAT EN VIVO COMPONENTE */
+        .chat-section { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 20px; margin-top: 40px; border-top: 4px solid #calc; display: flex; flex-direction: column; height: 450px; }
+        .chat-messages { flex-grow: 1; overflow-y: auto; padding: 10px; background: #050505; border-radius: 8px; margin-bottom: 15px; border: 1px solid #111; }
+        .chat-msg { margin-bottom: 10px; font-size: 0.95em; line-height: 1.4; word-break: break-word; }
+        .chat-msg .user { font-weight: bold; color: var(--neon-blue); margin-right: 5px; }
+        .chat-msg .admin-tag { color: var(--neon-pink); font-family: 'Orbitron'; font-size: 0.8em; border: 1px solid var(--neon-pink); padding: 1px 4px; border-radius: 4px; margin-right: 5px; }
+        .chat-msg .time { font-size: 0.75em; color: #555; margin-left: 8px; }
+        .chat-input-area { display: flex; gap: 10px; }
+        .chat-input-area input { flex-grow: 1; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
 
         /* ENTORNO ADMINISTRADOR INTEGRADO */
         .admin-panel { background: #111; border: 1px solid #333; border-radius: 15px; padding: 25px; margin-bottom: 40px; border-top: 4px solid var(--neon-blue); }
@@ -71,19 +81,20 @@
                     <li><a onclick="showSection('blog')">BLOG</a></li>
                     <li><a onclick="showSection('medios')">MEDIOS</a></li>
                     <li id="menu-admin-btn" class="hidden"><a onclick="showSection('admin')" style="color: var(--neon-blue);">🛠️ PANEL ADMIN</a></li>
-                    <li><a onclick="logout()" style="color: #ff4444; margin-left:15px;">SALIR</a></li>
+                    <li id="logout-btn-nav"><a onclick="logout()" style="color: #ff4444; margin-left:15px;">SALIR</a></li>
                 </ul>
             </nav>
         </div>
     </header>
 
-    <!-- PANTALLA DE AUTENTICACIÓN -->
+    <!-- PANTALLA DE AUTENTICACIÓN / ACCESO -->
     <div id="auth-section" class="container">
         <div class="auth-box" id="login-form">
             <h2 style="color: #fff; font-size: 1.8em;">INICIAR SESIÓN</h2>
             <input type="text" id="login-user" placeholder="Nombre de usuario">
             <input type="password" id="login-pass" placeholder="Contraseña">
             <button class="btn" onclick="login()">ENTRAR</button>
+            <button class="btn" style="background: #333; margin-top: 8px;" onclick="enterAsGuest()">ENTRAR COMO INVITADO</button>
             <p style="font-size: 0.85em; margin-top: 15px;">¿No tienes cuenta? <a onclick="toggleAuth(true)" style="color: var(--neon-blue); cursor: pointer; text-decoration: underline;">Regístrate aquí</a></p>
         </div>
 
@@ -116,8 +127,23 @@
                         </tbody>
                     </table>
                 </div>
-                <h2 class="section-title">Novedades</h2>
-                <div id="news-container" class="grid"></div>
+
+                <div class="grid" style="grid-template-columns: 2fr 1fr; align-items: start;">
+                    <div>
+                        <h2 class="section-title" style="text-align: left; font-size: 2em;">Novedades</h2>
+                        <div id="news-container" style="display: flex; flex-direction: column; gap: 20px;"></div>
+                    </div>
+                    <div>
+                        <h2 class="section-title" style="text-align: left; font-size: 2em; color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">Chat Global</h2>
+                        <div class="chat-section">
+                            <div class="chat-messages" id="chat-box"></div>
+                            <div class="chat-input-area">
+                                <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                                <button class="btn" style="width: auto; margin: 0; padding: 0 20px;" onclick="sendChatMessage()">▶</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -156,8 +182,8 @@
                 <input id="c-desc" placeholder="Descripción">
                 <input id="c-skills" placeholder="Habilidades (separadas por comas)">
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveDataItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
-                    <button class="btn" onclick="saveDataItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
+                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
@@ -167,8 +193,8 @@
                 <input id="n-title" placeholder="Título">
                 <textarea id="n-body" placeholder="Mensaje..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveDataItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:var(--neon-pink);" onclick="saveDataItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
@@ -178,8 +204,8 @@
                 <input id="b-title" placeholder="Título del Post">
                 <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveDataItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:#9b59b6;" onclick="saveDataItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
@@ -192,44 +218,104 @@
     </div>
 
     <script>
-        // Cuenta de Administrador Único por defecto
-        if (!localStorage.getItem('user_admin')) {
-            localStorage.setItem('user_admin', 'admin123'); 
+        const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com";
+
+        let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
+        let chatMessages = [];
+
+        // --- SISTEMA DE MODERACIÓN AUTOMÁTICA MULTILENGUAJE ---
+        const badWords = [
+            'mierda', 'puto', 'puta', 'boludo', 'boluda', 'pendejo', 'pendeja', 'concha', 'maricon', 'hijo de puta', 'hdp', 'cagon', 'culon', 'culona', 'trolo', 'orto',
+            'fuck', 'shit', 'bitch', 'asshole', 'dick', 'cunt', 'bastard',
+            'caralho', 'porra', 'puto', 'fdp'
+        ];
+
+        function isMessageInappropriate(text) {
+            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quita tildes
+            return badWords.some(word => cleanText.includes(word));
         }
 
-        function toggleAuth(showRegister) {
-            document.getElementById('login-form').classList.toggle('hidden', showRegister);
-            document.getElementById('register-form').classList.toggle('hidden', !showRegister);
+        // Descargar datos y chat
+        async function fetchAllCloudData() {
+            try {
+                const res = await fetch(`${FB_URL}/.json`);
+                const data = await res.json();
+                if (data) {
+                    cloudData.pvp_classes = data.pvp_classes || [];
+                    cloudData.pvp_news = data.pvp_news || [];
+                    cloudData.pvp_blog = data.pvp_blog || [];
+                    cloudData.pvp_gallery = data.pvp_gallery || [];
+                    cloudData.config = data.config || { pvp_game_url: "#" };
+                    
+                    if (data.chat) {
+                        chatMessages = Object.keys(data.chat).map(key => data.chat[key]);
+                    } else {
+                        chatMessages = [];
+                    }
+                }
+                refreshSiteData();
+                renderChat();
+            } catch (e) { console.error("Error en base de datos", e); }
         }
 
-        function register() {
-            const user = document.getElementById('reg-user').value.trim().toLowerCase();
+        async function syncToFirebase(key) {
+            await fetch(`${FB_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(cloudData[key]) });
+        }
+
+        // --- SISTEMA DE CUENTAS ---
+        async function register() {
+            const user = document.getElementById('reg-user').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
 
             if (!user || !pass) return alert("Completa todos los campos.");
-            if (user === 'admin') return alert("No puedes usar 'admin'.");
-            if (localStorage.getItem('user_' + user)) return alert("Este usuario ya existe.");
+            if (user.toLowerCase() === 'traco_games' || user.toLowerCase() === 'admin') return alert("Ese nombre está reservado.");
 
-            localStorage.setItem('user_' + user, pass);
-            alert("Cuenta de usuario creada.");
+            const res = await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`);
+            const exists = await res.json();
+            if (exists) return alert("Este usuario ya existe.");
+
+            await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify({ username: user, pass: pass }) });
+            alert("¡Cuenta creada correctamente! Ya puedes iniciar sesión.");
             toggleAuth(false);
         }
 
-        function login() {
-            const user = document.getElementById('login-user').value.trim().toLowerCase();
+        async function login() {
+            const userInput = document.getElementById('login-user').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
 
-            if (localStorage.getItem('user_' + user) === pass) {
-                sessionStorage.setItem('active_session', user);
+            if (userInput === 'Traco_Games' && pass === 'ceibalTG13@') {
+                sessionStorage.setItem('active_session', 'Traco_Games');
+                sessionStorage.setItem('display_name', 'Traco_Games');
+                loadInterface();
+                return;
+            }
+
+            const res = await fetch(`${FB_URL}/users/${userInput.toLowerCase()}.json`);
+            const userData = await res.json();
+
+            if (userData && userData.pass === pass) {
+                sessionStorage.setItem('active_session', userInput.toLowerCase());
+                sessionStorage.setItem('display_name', userData.username);
                 loadInterface();
             } else {
                 alert("Usuario o contraseña incorrectos.");
             }
         }
 
+        function enterAsGuest() {
+            sessionStorage.setItem('active_session', 'guest');
+            sessionStorage.setItem('display_name', 'Invitado');
+            loadInterface();
+        }
+
         function logout() {
-            sessionStorage.removeItem('active_session');
+            sessionStorage.clear();
             location.reload();
+        }
+
+        function toggleAuth(showRegister) {
+            document.getElementById('login-form').classList.toggle('hidden', showRegister);
+            document.getElementById('register-form').classList.toggle('hidden', !showRegister);
         }
 
         function loadInterface() {
@@ -240,12 +326,15 @@
             document.getElementById('site-header').classList.remove('hidden');
             document.getElementById('site-content').classList.remove('hidden');
 
-            if (currentUser === 'admin') {
+            if (currentUser === 'Traco_Games') {
                 document.getElementById('menu-admin-btn').classList.remove('hidden');
-                document.getElementById('adm-game-url').value = localStorage.getItem('pvp_game_url') || '';
+            }
+            if (currentUser === 'guest') {
+                document.getElementById('logout-btn-nav').innerHTML = `<a onclick="logout()" style="color: var(--neon-blue); margin-left:15px;">INICIAR SESIÓN</a>`;
             }
 
-            refreshSiteData();
+            fetchAllCloudData();
+            setInterval(fetchAllCloudData, 4000); // Auto-actualiza el chat cada 4 segundos
             showSection('home');
         }
 
@@ -255,14 +344,65 @@
             window.scrollTo(0,0);
         }
 
+        // --- SISTEMA DE CHAT ---
+        async function sendChatMessage() {
+            const session = sessionStorage.getItem('active_session');
+            const name = sessionStorage.getItem('display_name');
+            const input = document.getElementById('chat-input');
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            if (!session || session === 'guest') {
+                alert("🛑 Modos Invitado: Debes registrarte o iniciar sesión para poder escribir en el chat.");
+                input.value = '';
+                return;
+            }
+
+            if (isMessageInappropriate(text)) {
+                alert("⚠️ Mensaje Bloqueado: Tu mensaje contiene palabras inapropiadas o groserías. Por favor mantén el respeto.");
+                input.value = '';
+                return;
+            }
+
+            const newMsg = {
+                user: name,
+                isAdmin: session === 'Traco_Games',
+                text: text,
+                time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
+            };
+
+            await fetch(`${FB_URL}/chat.json`, { method: 'POST', body: JSON.stringify(newMsg) });
+            input.value = '';
+            fetchAllCloudData();
+        }
+
+        function renderChat() {
+            const box = document.getElementById('chat-box');
+            if (!box) return;
+            box.innerHTML = chatMessages.map(m => {
+                return `<div class="chat-msg">
+                    ${m.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
+                    <span class="user" style="${m.isAdmin ? 'color: var(--neon-pink);' : ''}">${m.user}:</span>
+                    <span class="text">${m.text}</span>
+                    <span class="time">${m.time}</span>
+                </div>`;
+            }).join('');
+            box.scrollTop = box.scrollHeight;
+        }
+
+        // --- RENDERIZADO GENERAL ---
         function refreshSiteData() {
-            const isAdmin = sessionStorage.getItem('active_session') === 'admin';
-            document.getElementById('play-btn').href = localStorage.getItem('pvp_game_url') || "#";
+            const isAdmin = sessionStorage.getItem('active_session') === 'Traco_Games';
             
-            const getAllItems = (k) => JSON.parse(localStorage.getItem(k)) || [];
-            
+            document.getElementById('play-btn').href = cloudData.config.pvp_game_url || "#";
+            if(isAdmin && document.getElementById('adm-game-url')) {
+                document.getElementById('adm-game-url').value = cloudData.config.pvp_game_url || '';
+            }
+
             // Renderizar Noticias
-            document.getElementById('news-container').innerHTML = getAllItems('pvp_news').map((n, i) => {
+            document.getElementById('news-container').innerHTML = cloudData.pvp_news.map((n, i) => {
+                if (!n) return '';
                 if (n.status !== 'publicado' && !isAdmin) return '';
                 return `<div class="card">
                     <h3>${n.title} ${n.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
@@ -272,7 +412,8 @@
             }).join('');
 
             // Renderizar Clases
-            document.getElementById('classes-container').innerHTML = getAllItems('pvp_classes').map((c, i) => {
+            document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map((c, i) => {
+                if (!c) return '';
                 if (c.status !== 'publicado' && !isAdmin) return '';
                 return `<div class="card">
                     <h3>${c.name} ${c.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
@@ -283,7 +424,8 @@
             }).join('');
 
             // Renderizar Blog
-            document.getElementById('blog-container').innerHTML = getAllItems('pvp_blog').map((b, i) => {
+            document.getElementById('blog-container').innerHTML = cloudData.pvp_blog.map((b, i) => {
+                if (!b) return '';
                 if (b.status !== 'publicado' && !isAdmin) return '';
                 return `<div class="card" style="border-left-color:var(--neon-pink)">
                     <h3>${b.title} ${b.status === 'borrador' ? '<span class="status-tag tag-borr">BORRADOR</span>' : ''}</h3>
@@ -293,46 +435,47 @@
             }).join('');
 
             // Renderizar Galería
-            document.getElementById('gallery-container').innerHTML = getAllItems('pvp_gallery').map((url, i) => `
-                <div style="height:250px; border-radius:15px; overflow:hidden; border:1px solid #222; position:relative;">
+            document.getElementById('gallery-container').innerHTML = cloudData.pvp_gallery.map((url, i) => {
+                if (!url) return '';
+                return `<div style="height:250px; border-radius:15px; overflow:hidden; border:1px solid #222; position:relative;">
                     <img src="${url}" style="width:100%; height:100%; object-fit:cover;">
                     ${isAdmin ? `<button class="btn-del" style="position:absolute; top:10px; right:10px;" onclick="deleteDataItem('pvp_gallery', ${i})">X</button>` : ''}
-                </div>`).join('');
+                </div>`;
+            }).join('');
         }
 
-        function saveGlobalConfig() {
-            localStorage.setItem('pvp_game_url', document.getElementById('adm-game-url').value);
-            alert("Link del juego actualizado.");
+        // --- ACCIONES ADMIN ---
+        async function saveGlobalConfig() {
+            cloudData.config.pvp_game_url = document.getElementById('adm-game-url').value;
+            await syncToFirebase('config');
+            alert("Link de juego sincronizado.");
             refreshSiteData();
         }
 
-        function saveDataItem(key, obj, editIdxId, status) {
-            if (!obj.title && !obj.name) return alert("Rellena los campos obligatorios.");
+        async function saveFormItem(key, obj, editIdxId, status) {
+            if (!obj.title && !obj.name) return alert("Completa los campos.");
             obj.status = status;
-            let data = JSON.parse(localStorage.getItem(key)) || [];
             const idx = parseInt(document.getElementById(editIdxId).value);
-            if (idx > -1) { data[idx] = obj; } else { data.push(obj); }
-            localStorage.setItem(key, JSON.stringify(data));
+            if (idx > -1) cloudData[key][idx] = obj;
+            else cloudData[key].push(obj);
+            await syncToFirebase(key);
             resetAdminForm(key, editIdxId);
             refreshSiteData();
-            alert("Guardado.");
+            alert("Guardado global exitoso.");
         }
 
-        function saveGalleryItem() {
-            const url = document.getElementById('g-url').value;
+        async function saveGalleryItem() {
+            const url = document.getElementById('g-url').value.trim();
             if(!url) return;
-            let data = JSON.parse(localStorage.getItem('pvp_gallery')) || [];
-            data.push(url);
-            localStorage.setItem('pvp_gallery', JSON.stringify(data));
+            cloudData.pvp_gallery.push(url);
+            await syncToFirebase('pvp_gallery');
             document.getElementById('g-url').value = '';
             refreshSiteData();
-            alert("Imagen añadida.");
         }
 
         function loadItemToEdit(key, idx, editIdxId) {
             showSection('admin');
-            let data = JSON.parse(localStorage.getItem(key)) || [];
-            let item = data[idx];
+            let item = cloudData[key][idx];
             document.getElementById(editIdxId).value = idx;
             if (key === 'pvp_classes') {
                 document.getElementById('c-name').value = item.name; document.getElementById('c-desc').value = item.desc; document.getElementById('c-skills').value = item.skills;
@@ -343,11 +486,10 @@
             }
         }
 
-        function deleteDataItem(key, idx) {
-            if (!confirm("¿Eliminar elemento?")) return;
-            let data = JSON.parse(localStorage.getItem(key)) || [];
-            data.splice(idx, 1);
-            localStorage.setItem(key, JSON.stringify(data));
+        async function deleteDataItem(key, idx) {
+            if (!confirm("¿Eliminar este elemento?")) return;
+            cloudData[key].splice(idx, 1);
+            await syncToFirebase(key);
             refreshSiteData();
         }
 
@@ -365,7 +507,7 @@
         window.onload = function() {
             const active = sessionStorage.getItem('active_session');
             if (active) { loadInterface(); }
-        }
+        };
     </script>
 </body>
 </html>
