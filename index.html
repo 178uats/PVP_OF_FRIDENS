@@ -45,15 +45,19 @@
         .btn { width: 100%; padding: 12px; background: var(--neon-pink); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; }
         .btn:hover { opacity: 0.9; box-shadow: 0 0 10px var(--neon-pink); }
 
-        /* CHAT EN VIVO COMPONENTE */
-        .chat-section { background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 20px; margin-top: 40px; border-top: 4px solid #calc; display: flex; flex-direction: column; height: 450px; }
-        .chat-messages { flex-grow: 1; overflow-y: auto; padding: 10px; background: #050505; border-radius: 8px; margin-bottom: 15px; border: 1px solid #111; }
-        .chat-msg { margin-bottom: 10px; font-size: 0.95em; line-height: 1.4; word-break: break-word; }
-        .chat-msg .user { font-weight: bold; color: var(--neon-blue); margin-right: 5px; }
-        .chat-msg .admin-tag { color: var(--neon-pink); font-family: 'Orbitron'; font-size: 0.8em; border: 1px solid var(--neon-pink); padding: 1px 4px; border-radius: 4px; margin-right: 5px; }
-        .chat-msg .time { font-size: 0.75em; color: #555; margin-left: 8px; }
+        /* SECCIÓN DE CHAT MEJORADA */
+        .chat-container-box { max-width: 800px; margin: 0 auto; background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; border-top: 4px solid var(--neon-pink); display: flex; flex-direction: column; height: 500px; box-shadow: 0 0 20px rgba(255, 64, 129, 0.1); }
+        .chat-messages { flex-grow: 1; overflow-y: auto; padding: 15px; background: #050505; border-radius: 8px; margin-bottom: 15px; border: 1px solid #111; }
+        .chat-msg { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95em; line-height: 1.4; word-break: break-word; padding: 6px; border-radius: 6px; }
+        .chat-msg:hover { background: #0f0f0f; }
+        .chat-msg .content-area { display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .chat-msg .user { font-weight: bold; color: var(--neon-blue); }
+        .chat-msg .admin-tag { color: var(--neon-pink); font-family: 'Orbitron'; font-size: 0.8em; border: 1px solid var(--neon-pink); padding: 1px 5px; border-radius: 4px; font-weight: bold; }
+        .chat-msg .time { font-size: 0.75em; color: #555; margin-left: 5px; }
         .chat-input-area { display: flex; gap: 10px; }
-        .chat-input-area input { flex-grow: 1; padding: 12px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
+        .chat-input-area input { flex-grow: 1; padding: 14px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; font-size: 1em; }
+        .btn-msg-del { background: #ff4444; color: #fff; border: none; border-radius: 4px; padding: 2px 6px; font-size: 0.75em; cursor: pointer; font-weight: bold; margin-left: 10px; transition: 0.2s; }
+        .btn-msg-del:hover { background: #cc0000; transform: scale(1.1); }
 
         /* ENTORNO ADMINISTRADOR INTEGRADO */
         .admin-panel { background: #111; border: 1px solid #333; border-radius: 15px; padding: 25px; margin-bottom: 40px; border-top: 4px solid var(--neon-blue); }
@@ -77,6 +81,7 @@
             <nav class="main-nav">
                 <ul id="main-menu">
                     <li><a onclick="showSection('home')">INICIO</a></li>
+                    <li><a onclick="showSection('chat')">💬 CHAT EN VIVO</a></li>
                     <li><a onclick="showSection('clases')">CLASES</a></li>
                     <li><a onclick="showSection('blog')">BLOG</a></li>
                     <li><a onclick="showSection('medios')">MEDIOS</a></li>
@@ -128,21 +133,19 @@
                     </table>
                 </div>
 
-                <div class="grid" style="grid-template-columns: 2fr 1fr; align-items: start;">
-                    <div>
-                        <h2 class="section-title" style="text-align: left; font-size: 2em;">Novedades</h2>
-                        <div id="news-container" style="display: flex; flex-direction: column; gap: 20px;"></div>
-                    </div>
-                    <div>
-                        <h2 class="section-title" style="text-align: left; font-size: 2em; color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">Chat Global</h2>
-                        <div class="chat-section">
-                            <div class="chat-messages" id="chat-box"></div>
-                            <div class="chat-input-area">
-                                <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
-                                <button class="btn" style="width: auto; margin: 0; padding: 0 20px;" onclick="sendChatMessage()">▶</button>
-                            </div>
-                        </div>
-                    </div>
+                <h2 class="section-title" style="text-align: left; font-size: 2em;">Novedades</h2>
+                <div id="news-container" class="grid"></div>
+            </div>
+        </div>
+
+        <!-- NUEVA SECCIÓN DE CHAT TOTALMENTE EXCLUSIVA -->
+        <div id="chat-content" class="container hidden">
+            <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">Chat Global en Vivo</h2>
+            <div class="chat-container-box">
+                <div class="chat-messages" id="chat-box"></div>
+                <div class="chat-input-area">
+                    <input type="text" id="chat-input" placeholder="Escribe un mensaje aquí con respeto..." onkeypress="if(event.key === 'Enter') sendChatMessage()">
+                    <button class="btn" style="width: auto; margin: 0; padding: 0 25px;" onclick="sendChatMessage()">ENVIAR ▶</button>
                 </div>
             </div>
         </div>
@@ -221,17 +224,17 @@
         const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com";
 
         let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
-        let chatMessages = [];
+        let chatMessages = []; // Ahora guardará {id: 'key', user: '', ...}
 
-        // --- SISTEMA DE MODERACIÓN AUTOMÁTICA MULTILENGUAJE ---
+        // --- MODERACIÓN DE PALABRAS ---
         const badWords = [
             'mierda', 'puto', 'puta', 'boludo', 'boluda', 'pendejo', 'pendeja', 'concha', 'maricon', 'hijo de puta', 'hdp', 'cagon', 'culon', 'culona', 'trolo', 'orto',
             'fuck', 'shit', 'bitch', 'asshole', 'dick', 'cunt', 'bastard',
-            'caralho', 'porra', 'puto', 'fdp'
+            'caralho', 'porra', 'fdp'
         ];
 
         function isMessageInappropriate(text) {
-            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, ""); // Quita tildes
+            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             return badWords.some(word => cleanText.includes(word));
         }
 
@@ -248,14 +251,16 @@
                     cloudData.config = data.config || { pvp_game_url: "#" };
                     
                     if (data.chat) {
-                        chatMessages = Object.keys(data.chat).map(key => data.chat[key]);
+                        chatMessages = Object.keys(data.chat).map(key => {
+                            return { id: key, ...data.chat[key] };
+                        });
                     } else {
                         chatMessages = [];
                     }
                 }
                 refreshSiteData();
                 renderChat();
-            } catch (e) { console.error("Error en base de datos", e); }
+            } catch (e) { console.error("Error cargando Firebase", e); }
         }
 
         async function syncToFirebase(key) {
@@ -275,7 +280,7 @@
             if (exists) return alert("Este usuario ya existe.");
 
             await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify({ username: user, pass: pass }) });
-            alert("¡Cuenta creada correctamente! Ya puedes iniciar sesión.");
+            alert("¡Cuenta creada con éxito!");
             toggleAuth(false);
         }
 
@@ -334,7 +339,7 @@
             }
 
             fetchAllCloudData();
-            setInterval(fetchAllCloudData, 4000); // Auto-actualiza el chat cada 4 segundos
+            setInterval(fetchAllCloudData, 3000); // Revisa mensajes nuevos cada 3 segundos
             showSection('home');
         }
 
@@ -342,9 +347,15 @@
             document.querySelectorAll('#site-content > div').forEach(p => p.classList.add('hidden'));
             document.getElementById(id + '-content').classList.remove('hidden');
             window.scrollTo(0,0);
+            if(id === 'chat') {
+                setTimeout(() => {
+                    const box = document.getElementById('chat-box');
+                    if(box) box.scrollTop = box.scrollHeight;
+                }, 100);
+            }
         }
 
-        // --- SISTEMA DE CHAT ---
+        // --- MECÁNICAS CHAT ---
         async function sendChatMessage() {
             const session = sessionStorage.getItem('active_session');
             const name = sessionStorage.getItem('display_name');
@@ -354,13 +365,13 @@
             if (!text) return;
 
             if (!session || session === 'guest') {
-                alert("🛑 Modos Invitado: Debes registrarte o iniciar sesión para poder escribir en el chat.");
+                alert("🛑 Registro requerido: Registrate o inicia sesión para hablar.");
                 input.value = '';
                 return;
             }
 
             if (isMessageInappropriate(text)) {
-                alert("⚠️ Mensaje Bloqueado: Tu mensaje contiene palabras inapropiadas o groserías. Por favor mantén el respeto.");
+                alert("⚠️ Mensaje Bloqueado por el sistema de moderación.");
                 input.value = '';
                 return;
             }
@@ -380,15 +391,26 @@
         function renderChat() {
             const box = document.getElementById('chat-box');
             if (!box) return;
+            const isAdmin = sessionStorage.getItem('active_session') === 'Traco_Games';
+
             box.innerHTML = chatMessages.map(m => {
                 return `<div class="chat-msg">
-                    ${m.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
-                    <span class="user" style="${m.isAdmin ? 'color: var(--neon-pink);' : ''}">${m.user}:</span>
-                    <span class="text">${m.text}</span>
-                    <span class="time">${m.time}</span>
+                    <div class="content-area">
+                        ${m.isAdmin ? '<span class="admin-tag">ADMIN</span>' : ''}
+                        <span class="user" style="${m.isAdmin ? 'color: var(--neon-pink);' : ''}">${m.user}:</span>
+                        <span class="text">${m.text}</span>
+                        <span class="time">${m.time}</span>
+                    </div>
+                    ${isAdmin ? `<button class="btn-msg-del" onclick="deleteChatMessage('${m.id}')">X</button>` : ''}
                 </div>`;
             }).join('');
-            box.scrollTop = box.scrollHeight;
+        }
+
+        // BORRAR MENSAJE DESDE LA NUBE
+        async function deleteChatMessage(msgId) {
+            if(!confirm("¿Quieres eliminar este mensaje del chat?")) return;
+            await fetch(`${FB_URL}/chat/${msgId}.json`, { method: 'DELETE' });
+            fetchAllCloudData();
         }
 
         // --- RENDERIZADO GENERAL ---
@@ -400,7 +422,7 @@
                 document.getElementById('adm-game-url').value = cloudData.config.pvp_game_url || '';
             }
 
-            // Renderizar Noticias
+            // Noticias
             document.getElementById('news-container').innerHTML = cloudData.pvp_news.map((n, i) => {
                 if (!n) return '';
                 if (n.status !== 'publicado' && !isAdmin) return '';
@@ -411,7 +433,7 @@
                 </div>`;
             }).join('');
 
-            // Renderizar Clases
+            // Clases
             document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map((c, i) => {
                 if (!c) return '';
                 if (c.status !== 'publicado' && !isAdmin) return '';
@@ -423,7 +445,7 @@
                 </div>`;
             }).join('');
 
-            // Renderizar Blog
+            // Blog
             document.getElementById('blog-container').innerHTML = cloudData.pvp_blog.map((b, i) => {
                 if (!b) return '';
                 if (b.status !== 'publicado' && !isAdmin) return '';
@@ -434,7 +456,7 @@
                 </div>`;
             }).join('');
 
-            // Renderizar Galería
+            // Galería
             document.getElementById('gallery-container').innerHTML = cloudData.pvp_gallery.map((url, i) => {
                 if (!url) return '';
                 return `<div style="height:250px; border-radius:15px; overflow:hidden; border:1px solid #222; position:relative;">
