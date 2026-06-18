@@ -5,6 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PVP of Friends - Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <!-- CONEXIÓN COMPATIBLE CON FIREBASE CORE Y REALTIME DATABASE -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
     <style>
         :root { --neon-blue: #00BCD4; --neon-pink: #FF4081; --dark-bg: #0D0D0D; --card-bg: #0a0a0a; --header-bg: #050505; }
         body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--dark-bg); color: #e0e0e0; overflow-x: hidden; }
@@ -18,7 +23,7 @@
         .main-nav a { color: #fff; text-decoration: none; font-weight: bold; font-size: 0.8em; cursor: pointer; }
         .main-nav a:hover { color: var(--neon-pink); text-shadow: 0 0 8px var(--neon-pink); }
 
-        /* CONTENEDORES Y DISEÑO */
+        /* CONTENEDORES */
         .container { width: 90%; max-width: 1200px; margin: 0 auto; padding: 100px 0; }
         .hidden { display: none !important; }
         .section-title { text-align: center; font-size: 2.5em; margin-bottom: 40px; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
@@ -30,25 +35,25 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: var(--card-bg); border: 1px solid #222; padding: 30px; border-radius: 15px; border-left: 4px solid var(--neon-blue); position: relative; }
         
-        /* ESTILOS DE CLANES */
+        /* CLANES */
         .clan-badge { font-family: 'Orbitron'; font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
         .clan-dragon { background: #ff4d4d; color: #000; box-shadow: 0 0 8px #ff4d4d; }
         .clan-fenix { background: #00ffff; color: #000; box-shadow: 0 0 8px #00ffff; }
         .clan-espectro { background: #9b59b6; color: #fff; box-shadow: 0 0 8px #9b59b6; }
         .clan-ninguno { background: #444; color: #aaa; }
 
-        /* PERFIL DE USUARIO EN INICIO */
+        /* PERFIL DE USUARIO */
         .user-status-bar { background: #111; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
         .clan-selector { background: #000; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
-        /* RANKING GENERAL */
+        /* CLASIFICACIÓN */
         .leaderboard-container { background: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; margin-bottom: 60px; }
         .leaderboard-table { width: 100%; border-collapse: collapse; }
         .leaderboard-table th { background: #111; color: var(--neon-blue); padding: 15px; text-align: left; font-family: 'Orbitron'; }
         .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
         .row-admin-or { background: rgba(255, 64, 129, 0.08); border-left: 4px solid var(--neon-pink); }
 
-        /* INTERFAZ AUTENTICACIÓN */
+        /* AUTENTICACIÓN */
         .auth-box { max-width: 400px; margin: 120px auto; background: var(--card-bg); border: 1px solid #333; padding: 40px; border-radius: 15px; border-top: 4px solid var(--neon-pink); text-align: center; }
         .auth-box input, .auth-box select { width: 100%; padding: 12px; margin: 10px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 8px; box-sizing: border-box; }
         .btn { width: 100%; padding: 12px; background: var(--neon-pink); color: #fff; border: none; border-radius: 8px; cursor: pointer; font-family: 'Orbitron'; font-weight: bold; margin-top: 10px; }
@@ -98,7 +103,6 @@
 
     <!-- PANTALLA DE ACCESO -->
     <div id="auth-section" class="container">
-        <!-- FORMULARIO DE INICIO -->
         <div class="auth-box" id="login-form">
             <h2 style="color: #fff; font-size: 1.8em;" id="auth-title">INGRESAR AL SISTEMA</h2>
             
@@ -123,8 +127,6 @@
 
     <!-- CONTENIDO GENERAL -->
     <div id="site-content" class="hidden">
-        
-        <!-- SECCIÓN INICIO -->
         <div id="home-content">
             <section class="hero-banner">
                 <h2 style="font-size: 4em; color:white; text-shadow: 0 0 20px var(--neon-blue);">PVP OF FRIENDS</h2>
@@ -132,7 +134,6 @@
             </section>
             
             <div class="container">
-                <!-- Barra de estado del Jugador Logueado -->
                 <div class="user-status-bar" id="user-profile-bar">
                     <div>👑 Jugador: <span id="bar-username" style="font-weight:bold; color:var(--neon-blue)">-</span></div>
                     <div>Clan Actual: <span id="bar-clan" class="clan-badge clan-ninguno">Ninguno</span></div>
@@ -161,7 +162,7 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE CHAT -->
+        <!-- SALA DE CHAT -->
         <div id="chat-content" class="container hidden">
             <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">SALA GLOBAL DE COMBATE</h2>
             <div class="chat-container-box">
@@ -173,31 +174,16 @@
             </div>
         </div>
 
-        <!-- SECCIÓN CLASES -->
-        <div id="clases-content" class="container hidden">
-            <h2 class="section-title">Clases de Combate</h2>
-            <div id="classes-container" class="grid"></div>
-        </div>
-
-        <!-- SECCIÓN BLOG -->
-        <div id="blog-content" class="container hidden">
-            <h2 class="section-title">Diario de Desarrollo</h2>
-            <div id="blog-container"></div>
-        </div>
-
-        <!-- SECCIÓN MEDIOS -->
-        <div id="medios-content" class="container hidden">
-            <h2 class="section-title">Galería de Medios</h2>
-            <div id="gallery-container" class="grid"></div>
-        </div>
+        <!-- SECCIONES DE CONTENIDO ADICIONAL -->
+        <div id="clases-content" class="container hidden"><h2 class="section-title">Clases de Combate</h2><div id="classes-container" class="grid"></div></div>
+        <div id="blog-content" class="container hidden"><h2 class="section-title">Diario de Desarrollo</h2><div id="blog-container"></div></div>
+        <div id="medios-content" class="container hidden"><h2 class="section-title">Galería de Medios</h2><div id="gallery-container" class="grid"></div></div>
 
         <!-- PANEL DE ADMINISTRADOR -->
         <div id="admin-content" class="container hidden">
             <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">PANEL MAESTRO DE CONTROL</h2>
-            
-            <div class="admin-panel" style="border-top-color: #fff;">
+            <div class="admin-panel">
                 <h3>📊 GESTIONAR ESTADÍSTICAS DE JUGADORES</h3>
-                <label style="font-size:0.9em; color:#aaa;">Seleccionar Usuario Registrado:</label>
                 <select id="adm-user-select" style="width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px;"></select>
                 <div style="display:flex; gap:10px;">
                     <input type="number" id="adm-user-lvl" placeholder="Nuevo Nivel">
@@ -205,77 +191,37 @@
                 </div>
                 <button class="btn" style="background:var(--neon-blue); color:#000;" onclick="modifyUserStatsAdmin()">MODIFICAR JUGADOR</button>
             </div>
-
-            <div class="admin-panel" style="border-top-color: #fff;">
+            <div class="admin-panel">
                 <h3>🔗 CONFIGURACIÓN DEL SITIO</h3>
                 <input id="adm-game-url" placeholder="URL del juego en Roblox">
                 <button class="btn" style="background:#fff; color:#000;" onclick="saveGlobalConfig()">SINCRONIZAR LINK DEL JUEGO</button>
             </div>
-
             <div class="admin-panel">
                 <h3>⚔️ GESTIÓN DE CLASES</h3>
-                <input id="c-name" placeholder="Nombre de la clase">
-                <input id="c-desc" placeholder="Descripción">
-                <input id="c-skills" placeholder="Habilidades (separadas por comas)">
-                <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'borrador')">BORRADOR</button>
-                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'publicado')">PUBLICAR</button>
-                </div>
+                <input id="c-name" placeholder="Nombre de la clase"><input id="c-desc" placeholder="Descripción"><input id="c-skills" placeholder="Habilidades">
+                <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'publicado')">PUBLICAR CLASE</button>
             </div>
-
-            <div class="admin-panel" style="border-top-color: var(--neon-pink);">
+            <div class="admin-panel">
                 <h3>📰 NOTICIAS Y NOVEDADES</h3>
-                <input id="n-title" placeholder="Título">
-                <textarea id="n-body" placeholder="Mensaje..."></textarea>
-                <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'publicado')">PUBLICAR</button>
-                </div>
-            </div>
-
-            <div class="admin-panel" style="border-top-color: #9b59b6;">
-                <h3>✍️ ENTRADAS DEL BLOG</h3>
-                <input id="b-title" placeholder="Título del Post">
-                <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
-                <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'publicado')">PUBLICAR</button>
-                </div>
-            </div>
-
-            <div class="admin-panel" style="border-top-color: #f1c40f;">
-                <h3>🖼️ AÑADIR A LA GALERÍA</h3>
-                <input id="g-url" placeholder="URL directa de la imagen">
-                <button class="btn" style="background:#f1c40f; color:#000;" onclick="saveGalleryItem()">AÑADIR FOTO</button>
+                <input id="n-title" placeholder="Título"><textarea id="n-body" placeholder="Mensaje..."></textarea>
+                <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'publicado')">PUBLICAR NOTICIA</button>
             </div>
         </div>
     </div>
 
-    <!-- SDK DE FIREBASE (MÓDULOS DE REALTIME DATABASE) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
+    <!-- SCRIPT DE CONTROL GLOBAL -->
+    <script>
         const firebaseConfig = {
             databaseURL: "https://pvp-friends-47018-default-rtdb.firebaseio.com"
         };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
 
         let sessionUser = null;
         let isGuest = false;
         let globalUsersList = [];
-        let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
         let chatMessages = [];
         let isRegisterMode = false;
-
-        const badWords = ['mierda', 'puto', 'puta', 'boludo', 'boluda', 'pendejo', 'pendeja', 'concha', 'maricon', 'hdp', 'fuck', 'shit', 'bitch'];
-
-        function isMessageInappropriate(text) {
-            const cleanText = text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            return badWords.some(word => cleanText.includes(word));
-        }
 
         function getPvpRange(level) {
             let lvl = parseInt(level) || 0;
@@ -293,28 +239,20 @@
             return 'clan-ninguno';
         }
 
-        // --- ALTERNAR MODO INICIO / REGISTRO ---
         window.toggleAuthMode = function() {
             isRegisterMode = !isRegisterMode;
-            const title = document.getElementById('auth-title');
-            const fields = document.getElementById('register-fields');
-            const btnPrimary = document.getElementById('btn-primary-auth');
-            const btnToggle = document.getElementById('btn-toggle-auth');
-
+            document.getElementById('auth-title').innerText = isRegisterMode ? "REGISTRAR PILOTO NUEVO" : "INGRESAR AL SISTEMA";
             if(isRegisterMode) {
-                title.innerText = "REGISTRAR PILOTO NUEVO";
-                fields.classList.remove('hidden');
-                btnPrimary.innerText = "CREAR CUENTA Y ENTRAR";
-                btnToggle.innerText = "¿Ya tienes cuenta? Iniciar Sesión";
+                document.getElementById('register-fields').classList.remove('hidden');
+                document.getElementById('btn-primary-auth').innerText = "CREAR CUENTA Y ENTRAR";
+                document.getElementById('btn-toggle-auth').innerText = "¿Ya tienes cuenta? Iniciar Sesión";
             } else {
-                title.innerText = "INGRESAR AL SISTEMA";
-                fields.classList.add('hidden');
-                btnPrimary.innerText = "INICIAR SESIÓN";
-                btnToggle.innerText = "¿No tienes cuenta? Registrarse";
+                document.getElementById('register-fields').classList.add('hidden');
+                document.getElementById('btn-primary-auth').innerText = "INICIAR SESIÓN";
+                document.getElementById('btn-toggle-auth').innerText = "¿No tienes cuenta? Registrarse";
             }
         };
 
-        // --- SISTEMA DE AUTENTICACIÓN ---
         window.loginClassic = function() {
             const usernameInput = document.getElementById('login-username').value.trim();
             const masterPass = document.getElementById('login-master-pass').value;
@@ -323,18 +261,14 @@
             if (!usernameInput) return alert("Escribe tu nombre de piloto.");
             const lowerUser = usernameInput.toLowerCase();
 
-            // Validación Admin
-            if ((lowerUser === 'traco_games' || lowerUser === 'admin')) {
-                if (masterPass !== 'ceibalTG13@') return alert("Contraseña de administrador incorrecta.");
-                isRegisterMode = false; // Forzar que no intente registrar el admin
+            if ((lowerUser === 'traco_games' || lowerUser === 'admin') && masterPass !== 'ceibalTG13@') {
+                return alert("Contraseña de administrador incorrecta.");
             }
 
             let existingUser = globalUsersList.find(u => u.username.toLowerCase() === lowerUser);
 
             if (isRegisterMode) {
-                // Modo Registro
-                if (existingUser) return alert("❌ Ese nombre ya está registrado. Elige otro o inicia sesión.");
-                
+                if (existingUser) return alert("❌ Ese nombre ya está registrado.");
                 const userKey = lowerUser === 'traco_games' ? 'traco_games_admin' : 'user_' + Date.now();
                 sessionUser = {
                     id: userKey,
@@ -344,50 +278,30 @@
                     kills: lowerUser === 'traco_games' ? 99999 : 0,
                     isAdmin: lowerUser === 'traco_games'
                 };
-                set(ref(db, `users/${userKey}`), sessionUser);
-                alert("🎉 ¡Registro exitoso!");
+                db.ref(`users/${userKey}`).set(sessionUser);
+                alert("🎉 ¡Cuenta creada con éxito!");
             } else {
-                // Modo Iniciar Sesión
-                if (!existingUser && lowerUser !== 'traco_games') {
-                    return alert("❌ Usuario no encontrado. Dale al botón de abajo para Registrarte primero.");
-                }
-                sessionUser = existingUser || {
-                    id: 'traco_games_admin',
-                    username: 'Traco_Games',
-                    clan: chosenClan,
-                    level: 999,
-                    kills: 99999,
-                    isAdmin: true
-                };
+                if (!existingUser && lowerUser !== 'traco_games') return alert("❌ Usuario no encontrado. Dale a Registrarse primero.");
+                sessionUser = existingUser || { id: 'traco_games_admin', username: 'Traco_Games', clan: 'Ninguno', level: 999, kills: 99999, isAdmin: true };
             }
 
             isGuest = false;
-            launchAppInterface();
+            launchInterface();
         };
 
-        // --- ENTRAR COMO INVITADO ---
         window.enterAsGuest = function() {
             isGuest = true;
             sessionUser = { username: "Invitado", clan: "Ninguno", level: 0, kills: 0, isAdmin: false };
-            
-            launchAppInterface();
-            
-            // Ajustes visuales para el modo invitado
+            launchInterface();
             document.getElementById('clan-changer-area').classList.add('hidden');
-            document.getElementById('chat-write-zone').innerHTML = `<p style="color:#aaa; text-align:center; width:100%;">🔒 Debes registrarte para poder hablar en el chat.</p>`;
+            document.getElementById('chat-write-zone').innerHTML = `<p style="color:#aaa; text-align:center; width:100%;">🔒 Regístrate para hablar.</p>`;
         };
 
-        function launchAppInterface() {
+        function launchInterface() {
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('site-header').classList.remove('hidden');
             document.getElementById('site-content').classList.remove('hidden');
-
-            if (sessionUser.isAdmin) {
-                document.getElementById('menu-admin-btn').classList.remove('hidden');
-            } else {
-                document.getElementById('menu-admin-btn').classList.add('hidden');
-            }
-
+            document.getElementById('menu-admin-btn').classList.toggle('hidden', !sessionUser.isAdmin);
             updateLiveUserBar();
             showSection('home');
         }
@@ -395,224 +309,72 @@
         function updateLiveUserBar() {
             if(!sessionUser) return;
             document.getElementById('bar-username').innerText = sessionUser.username;
-            const bClan = document.getElementById('bar-clan');
-            bClan.innerText = isGuest ? "Modo Espectador" : "Clan " + (sessionUser.clan || 'Ninguno');
-            bClan.className = "clan-badge " + getClanClass(sessionUser.clan);
+            document.getElementById('bar-clan').innerText = "Clan " + (sessionUser.clan || 'Ninguno');
+            document.getElementById('bar-clan').className = "clan-badge " + getClanClass(sessionUser.clan);
             document.getElementById('bar-level').innerText = sessionUser.level;
             document.getElementById('bar-kills').innerText = sessionUser.kills;
-            document.getElementById('bar-clan-select').value = sessionUser.clan || 'Ninguno';
         }
 
-        window.logout = function() {
-            location.reload();
-        };
-
-        window.showSection = function(id) {
-            document.querySelectorAll('#site-content > div').forEach(p => p.classList.add('hidden'));
-            document.getElementById(id + '-content').classList.remove('hidden');
-            window.scrollTo(0,0);
-        };
-
-        window.changeClanDirectly = async function(newClan) {
-            if(!sessionUser || isGuest) return;
-            
-            if(sessionUser.isAdmin) {
-                sessionUser.clan = newClan;
-                await update(ref(db, `users/${sessionUser.id}`), { clan: newClan });
-                updateLiveUserBar();
-                return;
-            }
-
-            if(confirm("⚠️ ADVERTENCIA DE TRAICIÓN:\n¿Seguro que quieres cambiar de bando? Perderás todo tu nivel y kills acumulados.")){
-                sessionUser.clan = newClan;
-                sessionUser.level = 0;
-                sessionUser.kills = 0;
-                await update(ref(db, `users/${sessionUser.id}`), { clan: newClan, level: 0, kills: 0 });
-                updateLiveUserBar();
-            } else {
-                updateLiveUserBar();
-            }
-        };
-
-        // --- TRANSMISIÓN EN TIEMPO REAL ---
-        function startListeners() {
-            onValue(ref(db, 'users'), (snapshot) => {
-                const data = snapshot.val();
-                globalUsersList = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
-                renderLeaderboard();
-                renderAdminUserSelect();
-                
-                if(sessionUser && !isGuest) {
-                    let liveMe = globalUsersList.find(u => u.id === sessionUser.id);
-                    if(liveMe) {
-                        sessionUser = liveMe;
-                        updateLiveUserBar();
-                    }
-                }
-            });
-
-            onValue(ref(db, 'chat'), (snapshot) => {
-                const data = snapshot.val();
-                chatMessages = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
-                renderChat();
-            });
-
-            const nodes = ['pvp_classes', 'pvp_news', 'pvp_blog', 'pvp_gallery', 'config'];
-            nodes.forEach(node => {
-                onValue(ref(db, node), (snapshot) => {
-                    cloudData[node] = snapshot.val() || (node === 'config' ? { pvp_game_url: "#" } : []);
-                    refreshSiteData();
-                });
-            });
-        }
-        startListeners();
-
-        function renderLeaderboard() {
-            const listElement = document.getElementById('leader-list');
-            if(!listElement) return;
-
-            let sorted = [...globalUsersList].sort((a,b) => {
-                let scoreB = (parseInt(b.kills) || 0) + (parseInt(b.level) || 0) * 10;
-                let scoreA = (parseInt(a.kills) || 0) + (parseInt(a.level) || 0) * 10;
-                return scoreB - scoreA;
-            });
-
-            listElement.innerHTML = sorted.map((user, index) => {
-                const isTraco = user.id === 'traco_games_admin' || user.username.toLowerCase() === 'traco_games';
-                return `<tr class="${isTraco ? 'row-admin-or' : ''}">
-                    <td><strong>#${index + 1}</strong></td>
-                    <td style="${isTraco ? 'color: var(--neon-pink); font-weight:bold; text-shadow:0 0 5px var(--neon-pink)' : ''}">${user.username}</td>
-                    <td><span class="clan-badge ${getClanClass(user.clan)}">${user.clan || 'Ninguno'}</span></td>
-                    <td><span style="font-weight:bold;">${isTraco ? '⚡ ADMIN ORIGINAL' : getPvpRange(user.level)}</span></td>
-                    <td>${isTraco ? '∞' : (user.level || 0)}</td>
-                    <td>${user.kills || 0}</td>
-                </tr>`;
-            }).join('');
-        }
-
-        window.sendChatMessage = async function() {
+        window.sendChatMessage = function() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if(!text || !sessionUser || isGuest) return;
+            if(!text || isGuest) return;
 
-            if (isMessageInappropriate(text)) {
-                alert("⚠️ Mensaje bloqueado por el filtro automático.");
-                input.value = '';
-                return;
-            }
-
-            const msg = {
+            db.ref('chat').push({
                 user: sessionUser.username,
                 clan: sessionUser.clan,
                 isAdminMsg: sessionUser.isAdmin,
                 text: text,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-            };
-
-            await push(ref(db, 'chat'), msg);
+            });
             input.value = '';
         };
 
-        function renderChat() {
+        window.changeClanDirectly = function(newClan) {
+            if(!sessionUser || isGuest) return;
+            db.ref(`users/${sessionUser.id}`).update({ clan: newClan });
+        };
+
+        window.logout = function() { location.reload(); };
+        window.showSection = function(id) {
+            document.querySelectorAll('#site-content > div').forEach(p => p.classList.add('hidden'));
+            document.getElementById(id + '-content').classList.remove('hidden');
+        };
+
+        // ESCUCHAS EN TIEMPO REAL
+        db.ref('users').on('value', (snapshot) => {
+            const data = snapshot.val();
+            globalUsersList = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+            
+            const listElement = document.getElementById('leader-list');
+            if(listElement) {
+                let sorted = [...globalUsersList].sort((a,b) => (b.kills || 0) - (a.kills || 0));
+                listElement.innerHTML = sorted.map((user, i) => `
+                    <tr class="${user.isAdmin ? 'row-admin-or' : ''}">
+                        <td><strong>#${i + 1}</strong></td>
+                        <td>${user.username}</td>
+                        <td><span class="clan-badge ${getClanClass(user.clan)}">${user.clan}</span></td>
+                        <td>${user.isAdmin ? '⚡ ADMIN' : getPvpRange(user.level)}</td>
+                        <td>${user.level || 0}</td>
+                        <td>${user.kills || 0}</td>
+                    </tr>`).join('');
+            }
+        });
+
+        db.ref('chat').on('value', (snapshot) => {
+            const data = snapshot.val();
+            chatMessages = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
             const box = document.getElementById('chat-box');
-            if(!box) return;
-            const isMeAdmin = sessionUser && sessionUser.isAdmin;
-
-            box.innerHTML = chatMessages.map(m => `
-                <div class="chat-msg">
-                    <div class="content-area">
-                        ${m.isAdminMsg ? '<span class="admin-tag">ADMIN ORIGINAL</span>' : `<span class="clan-badge ${getClanClass(m.clan)}">${m.clan}</span>`}
-                        <span class="user" style="${m.isAdminMsg ? 'color: var(--neon-pink); text-shadow:0 0 5px var(--neon-pink);' : ''}">${m.user}:</span>
-                        <span class="text">${m.text}</span>
-                        <span class="time">${m.time}</span>
-                    </div>
-                    ${isMeAdmin ? `<button class="btn-msg-del" data-id="${m.id}">X</button>` : ''}
-                </div>
-            `).join('');
-            box.scrollTop = box.scrollHeight;
-
-            if(isMeAdmin) {
-                document.querySelectorAll('.btn-msg-del').forEach(btn => {
-                    btn.onclick = async function() { await remove(ref(db, `chat/${this.getAttribute('data-id')}`)); };
-                });
+            if(box) {
+                box.innerHTML = chatMessages.map(m => `
+                    <div class="chat-msg">
+                        <div class="content-area">
+                            <span class="user">${m.user}:</span> <span class="text">${m.text}</span>
+                        </div>
+                    </div>`).join('');
+                box.scrollTop = box.scrollHeight;
             }
-        }
-
-        function refreshSiteData() {
-            const playBtn = document.getElementById('play-btn');
-            if(playBtn) playBtn.href = cloudData.config?.pvp_game_url || "#";
-
-            const newsBox = document.getElementById('news-container');
-            if (newsBox) {
-                const arr = cloudData.pvp_news ? Object.keys(cloudData.pvp_news).map(k => cloudData.pvp_news[k]).filter(n => n.status === 'publicado') : [];
-                newsBox.innerHTML = arr.map(n => `<div class="card"><h3>${n.title}</h3><p>${n.body}</p></div>`).join('');
-            }
-
-            const classBox = document.getElementById('classes-container');
-            if (classBox) {
-                const arr = cloudData.pvp_classes ? Object.keys(cloudData.pvp_classes).map(k => cloudData.pvp_classes[k]).filter(c => c.status === 'publicado') : [];
-                classBox.innerHTML = arr.map(c => `<div class="card"><h3>⚔️ ${c.name}</h3><p>${c.desc}</p><small style="color:var(--neon-blue)">Habilidades: ${c.skills}</small></div>`).join('');
-            }
-
-            const bContainer = document.getElementById('blog-container');
-            if (bContainer) {
-                const arr = cloudData.pvp_blog ? Object.keys(cloudData.pvp_blog).map(k => cloudData.pvp_blog[k]).filter(b => b.status === 'publicado') : [];
-                bContainer.innerHTML = arr.map(b => `<div class="card" style="margin-bottom:20px;"><h3>${b.title}</h3><p>${b.body}</p></div>`).join('');
-            }
-
-            const galBox = document.getElementById('gallery-container');
-            if (galBox) {
-                const arr = cloudData.pvp_gallery ? Object.keys(cloudData.pvp_gallery).map(k => cloudData.pvp_gallery[k]) : [];
-                galBox.innerHTML = arr.map(p => `<div class="card" style="padding:10px;"><img src="${p.url}" style="width:100%; border-radius:10px; border:1px solid #333;"></div>`).join('');
-            }
-        }
-
-        function renderAdminUserSelect() {
-            const select = document.getElementById('adm-user-select');
-            if(!select) return;
-            select.innerHTML = globalUsersList.map(u => `<option value="${u.id}">${u.username}</option>`).join('');
-        }
-
-        window.modifyUserStatsAdmin = async function() {
-            const id = document.getElementById('adm-user-select').value;
-            const lvl = parseInt(document.getElementById('adm-user-lvl').value);
-            const kills = parseInt(document.getElementById('adm-user-kills').value);
-
-            if(!id) return alert("Selecciona un jugador.");
-            const updates = {};
-            if(!isNaN(lvl)) updates.level = lvl;
-            if(!isNaN(kills)) updates.kills = kills;
-
-            await update(ref(db, `users/${id}`), updates);
-            alert("Estadísticas del piloto actualizadas.");
-            document.getElementById('adm-user-lvl').value = '';
-            document.getElementById('adm-user-kills').value = '';
-        };
-
-        window.saveGlobalConfig = async function() {
-            const url = document.getElementById('adm-game-url').value.trim();
-            if(!url) return;
-            await set(ref(db, 'config'), { pvp_game_url: url });
-            alert("Enlace sincronizado con éxito.");
-            document.getElementById('adm-game-url').value = '';
-        };
-
-        window.saveFormItem = async function(node, data, status) {
-            if(!data.name && !data.title) return alert("Completa el formulario.");
-            await push(ref(db, node), { ...data, status: status });
-            alert(`Guardado como ${status}`);
-            document.getElementById('c-name').value = ''; document.getElementById('c-desc').value = ''; document.getElementById('c-skills').value = '';
-            document.getElementById('n-title').value = ''; document.getElementById('n-body').value = '';
-            document.getElementById('b-title').value = ''; document.getElementById('b-body').value = '';
-        };
-
-        window.saveGalleryItem = async function() {
-            const url = document.getElementById('g-url').value.trim();
-            if(!url) return;
-            await push(ref(db, 'pvp_gallery'), { url: url });
-            alert("Foto añadida.");
-            document.getElementById('g-url').value = '';
-        };
+        });
     </script>
 </body>
 </html>
