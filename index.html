@@ -72,10 +72,6 @@
         .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 8px; }
         .btn-borr { background: #444; }
-        .btn-edit { background: var(--neon-blue); color: #000; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; }
-        .btn-del { background: #ff4444; color: #fff; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; margin-left: 5px; }
-        .status-tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight: bold; }
-        .admin-controls-inline { margin-top: 15px; display: flex; justify-content: flex-end; gap: 5px; }
     </style>
 </head>
 <body>
@@ -92,7 +88,7 @@
                     <li><a onclick="showSection('blog')">BLOG</a></li>
                     <li><a onclick="showSection('medios')">MEDIOS</a></li>
                     <li id="menu-admin-btn" class="hidden"><a onclick="showSection('admin')" style="color: var(--neon-blue);">🛠️ PANEL ADMIN</a></li>
-                    <li id="logout-btn-nav"><a onclick="logout()" style="color: #ff4444; margin-left:15px;">SALIR</a></li>
+                    <li><a onclick="logout()" style="color: #ff4444; margin-left:15px;">SALIR</a></li>
                 </ul>
             </nav>
         </div>
@@ -101,27 +97,17 @@
     <!-- PANTALLA DE ACCESO -->
     <div id="auth-section" class="container">
         <div class="auth-box" id="login-form">
-            <h2 style="color: #fff; font-size: 1.8em;">INICIAR SESIÓN</h2>
-            <input type="text" id="login-user" placeholder="Nombre de usuario">
-            <input type="password" id="login-pass" placeholder="Contraseña">
-            <button class="btn" onclick="login()">ENTRAR</button>
-            <button class="btn" style="background: #333; margin-top: 8px;" onclick="enterAsGuest()">ENTRAR COMO INVITADO</button>
-            <p style="font-size: 0.85em; margin-top: 15px;">¿No tienes cuenta? <a onclick="toggleAuth(true)" style="color: var(--neon-blue); cursor: pointer; text-decoration: underline;">Regístrate aquí</a></p>
-        </div>
-
-        <div class="auth-box hidden" id="register-form">
-            <h2 style="color: #fff; font-size: 1.8em;">CREAR CUENTA</h2>
-            <input type="text" id="reg-user" placeholder="Elige un usuario">
-            <input type="password" id="reg-pass" placeholder="Escribe tu contraseña">
-            <label style="display:block; text-align:left; font-size:0.8em; margin-top:10px; color:#aaa;">SELECCIONA TU CLAN INICIAL:</label>
-            <select id="reg-clan">
+            <h2 style="color: #fff; font-size: 1.8em;">INGRESAR AL SISTEMA</h2>
+            <input type="text" id="login-username" placeholder="Tu Nombre de Piloto / Usuario">
+            <input type="password" id="login-master-pass" placeholder="Contraseña Admin (Opcional)">
+            <label style="display:block; text-align:left; font-size:0.8em; margin-top:10px; color:#aaa;">SELECCIONA TU CLAN:</label>
+            <select id="login-clan">
                 <option value="Ninguno">Sin clan (Neutral)</option>
                 <option value="Dragón">🔴 Clan Dragón</option>
                 <option value="Fénix">🔵 Clan Fénix</option>
                 <option value="Espectro">🟢 Clan Espectro</option>
             </select>
-            <button class="btn" style="background: var(--neon-blue);" onclick="register()">REGISTRARME</button>
-            <p style="font-size: 0.85em; margin-top: 15px;">¿Ya tienes cuenta? <a onclick="toggleAuth(false)" style="color: var(--neon-pink); cursor: pointer; text-decoration: underline;">Inicia sesión</a></p>
+            <button class="btn" onclick="loginClassic()">ENTRAR A COMBATIR</button>
         </div>
     </div>
 
@@ -201,8 +187,8 @@
             
             <div class="admin-panel" style="border-top-color: #fff;">
                 <h3>📊 GESTIONAR ESTADÍSTICAS DE JUGADORES</h3>
-                <label style="font-size:0.9em; color:#aaa;">Buscar Usuario Registrado:</label>
-                <input id="adm-user-search" placeholder="Escribe el nombre exacto del usuario">
+                <label style="font-size:0.9em; color:#aaa;">Seleccionar Usuario Registrado:</label>
+                <select id="adm-user-select" style="width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px;"></select>
                 <div style="display:flex; gap:10px;">
                     <input type="number" id="adm-user-lvl" placeholder="Nuevo Nivel">
                     <input type="number" id="adm-user-kills" placeholder="Nuevas Bajas (Kills)">
@@ -217,36 +203,33 @@
             </div>
 
             <div class="admin-panel">
-                <h3 id="form-title-classes">⚔️ GESTIÓN DE CLASES</h3>
-                <input type="hidden" id="edit-idx-classes" value="-1">
+                <h3>⚔️ GESTIÓN DE CLASES</h3>
                 <input id="c-name" placeholder="Nombre de la clase">
                 <input id="c-desc" placeholder="Descripción">
                 <input id="c-skills" placeholder="Habilidades (separadas por comas)">
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
-                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
             <div class="admin-panel" style="border-top-color: var(--neon-pink);">
-                <h3 id="form-title-news">📰 NOTICIAS Y NOVEDADES</h3>
-                <input type="hidden" id="edit-idx-news" value="-1">
+                <h3>📰 NOTICIAS Y NOVEDADES</h3>
                 <input id="n-title" placeholder="Título">
                 <textarea id="n-body" placeholder="Mensaje..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
             <div class="admin-panel" style="border-top-color: #9b59b6;">
-                <h3 id="form-title-blog">✍️ ENTRADAS DEL BLOG</h3>
-                <input type="hidden" id="edit-idx-blog" value="-1">
+                <h3>✍️ ENTRADAS DEL BLOG</h3>
                 <input id="b-title" placeholder="Título del Post">
                 <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
@@ -258,12 +241,24 @@
         </div>
     </div>
 
-    <script>
-        const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com";
+    <!-- SDK DE FIREBASE (MÓDULOS DE REALTIME DATABASE) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, update, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
+        // CONFIGURACIÓN DE TU BASE DE DATOS
+        const firebaseConfig = {
+            databaseURL: "https://pvp-friends-47018-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Variables de Control
+        let sessionUser = null;
+        let globalUsersList = [];
         let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
         let chatMessages = [];
-        let globalUsersList = [];
 
         const badWords = ['mierda', 'puto', 'puta', 'boludo', 'boluda', 'pendejo', 'pendeja', 'concha', 'maricon', 'hdp', 'fuck', 'shit', 'bitch'];
 
@@ -272,7 +267,6 @@
             return badWords.some(word => cleanText.includes(word));
         }
 
-        // Calcular el Rango en base al Nivel
         function getPvpRange(level) {
             let lvl = parseInt(level) || 0;
             if (lvl >= 100) return "👑 Dios del PVP";
@@ -289,326 +283,288 @@
             return 'clan-ninguno';
         }
 
-        // Descarga de datos
-        async function fetchAllCloudData() {
-            try {
-                const res = await fetch(`${FB_URL}/.json`);
-                const data = await res.json();
-                if (data) {
-                    cloudData.pvp_classes = data.pvp_classes || [];
-                    cloudData.pvp_news = data.pvp_news || [];
-                    cloudData.pvp_blog = data.pvp_blog || [];
-                    cloudData.pvp_gallery = data.pvp_gallery || [];
-                    cloudData.config = data.config || { pvp_game_url: "#" };
-                    
-                    // Procesar lista global de cuentas registradas
-                    if (data.users) {
-                        globalUsersList = Object.keys(data.users).map(key => data.users[key]);
-                    } else {
-                        globalUsersList = [];
-                    }
+        // --- LOGIN CLÁSICO ---
+        window.loginClassic = function() {
+            const usernameInput = document.getElementById('login-username').value.trim();
+            const masterPass = document.getElementById('login-master-pass').value;
+            const chosenClan = document.getElementById('login-clan').value;
 
-                    // Forzar que Traco_Games siempre aparezca en la base de datos de clasificación con datos por defecto si no existe
-                    let tracoInList = globalUsersList.find(u => u.username.toLowerCase() === 'traco_games');
-                    if(!tracoInList) {
-                        globalUsersList.push({ username: 'Traco_Games', clan: 'Dragón', level: 999, kills: 99999 });
-                    } else {
-                        // Asegurar que mantenga nivel legendario de creador si no se le ha editado
-                        if(!tracoInList.level) tracoInList.level = 999;
-                        if(!tracoInList.kills) tracoInList.kills = 99999;
-                    }
+            if (!usernameInput) return alert("Escribe tu nombre de piloto.");
 
-                    if (data.chat) {
-                        chatMessages = Object.keys(data.chat).map(key => { return { id: key, ...data.chat[key] }; });
-                    } else {
-                        chatMessages = [];
-                    }
-                }
-                refreshSiteData();
-                renderLeaderboard();
-                renderChat();
-                updateLiveUserBar();
-            } catch (e) { console.error(e); }
-        }
+            const lowerUser = usernameInput.toLowerCase();
 
-        async function syncToFirebase(key) {
-            await fetch(`${FB_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(cloudData[key]) });
-        }
-
-        // --- REGISTRO CON CLAN ---
-        async function register() {
-            const user = document.getElementById('reg-user').value.trim();
-            const pass = document.getElementById('reg-pass').value.trim();
-            const clan = document.getElementById('reg-clan').value;
-
-            if (!user || !pass) return alert("Completa los datos.");
-            if (user.toLowerCase() === 'traco_games' || user.toLowerCase() === 'admin') return alert("Nombre reservado.");
-
-            const res = await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`);
-            const exists = await res.json();
-            if (exists) return alert("El usuario ya existe.");
-
-            const newUserObj = {
-                username: user,
-                pass: pass,
-                clan: clan,
-                level: 0,
-                kills: 0
-            };
-
-            await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify(newUserObj) });
-            alert("¡Cuenta de guerrero creada con éxito!");
-            toggleAuth(false);
-        }
-
-        async function login() {
-            const userInput = document.getElementById('login-user').value.trim();
-            const pass = document.getElementById('login-pass').value.trim();
-
-            if (userInput.toLowerCase() === 'traco_games' && pass === 'ceibalTG13@') {
-                sessionStorage.setItem('active_session', 'traco_games');
-                sessionStorage.setItem('display_name', 'Traco_Games');
-                loadInterface();
-                return;
+            // Validación de Nombres Reservados para el Admin
+            if ((lowerUser === 'traco_games' || lowerUser === 'admin') && masterPass !== 'ceibalTG13@') {
+                return alert("Contraseña de administrador incorrecta.");
             }
 
-            const res = await fetch(`${FB_URL}/users/${userInput.toLowerCase()}.json`);
-            const userData = await res.json();
+            // Buscar si el usuario ya existe en la lista de la nube
+            let existingUser = globalUsersList.find(u => u.username.toLowerCase() === lowerUser);
 
-            if (userData && userData.pass === pass) {
-                sessionStorage.setItem('active_session', userInput.toLowerCase());
-                sessionStorage.setItem('display_name', userData.username);
-                loadInterface();
+            if (existingUser) {
+                sessionUser = existingUser;
             } else {
-                alert("Credenciales incorrectas.");
-            }
-        }
-
-        // CAMBIAR DE CLAN DIRECTO (CON REINICIO DE ESTADÍSTICAS)
-        async function changeClanDirectly(newClan) {
-            const session = sessionStorage.getItem('active_session');
-            if(session === 'guest') return alert("Los visitantes no tienen clan.");
-            if(session === 'traco_games') {
-                // Traco es inmune al reinicio por ser el admin original
-                await fetch(`${FB_URL}/users/traco_games/clan.json`, { method: 'PUT', body: JSON.stringify(newClan) });
-                fetchAllCloudData();
-                return;
-            }
-
-            if(confirm("⚠️ ADVERTENCIA DE TRAICIÓN:\n¿Estás seguro de cambiar de clan? Si te unes a un nuevo clan, perderás todo tu progreso actual. Tu nivel y tus bajas volverán a 0 inmediatamente.")){
-                const updates = {
-                    clan: newClan,
-                    level: 0,
-                    kills: 0
+                // Crear usuario nuevo en la nube de forma independiente
+                const userKey = lowerUser === 'traco_games' ? 'traco_games_admin' : 'user_' + Date.now();
+                sessionUser = {
+                    id: userKey,
+                    username: usernameInput,
+                    clan: chosenClan,
+                    level: lowerUser === 'traco_games' ? 999 : 0,
+                    kills: lowerUser === 'traco_games' ? 99999 : 0,
+                    isAdmin: lowerUser === 'traco_games'
                 };
-                await fetch(`${FB_URL}/users/${session}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
-                alert("Te has cambiado de bando. Tu progreso ha sido reiniciado.");
-                fetchAllCloudData();
-            } else {
-                fetchAllCloudData(); // Revierte el selector visual
+                set(ref(db, `users/${userKey}`), sessionUser);
             }
-        }
 
-        function enterAsGuest() {
-            sessionStorage.setItem('active_session', 'guest');
-            sessionStorage.setItem('display_name', 'Invitado');
-            loadInterface();
-        }
-
-        function logout() { sessionStorage.clear(); location.reload(); }
-        function toggleAuth(showRegister) {
-            document.getElementById('login-form').classList.toggle('hidden', showRegister);
-            document.getElementById('register-form').classList.toggle('hidden', !showRegister);
-        }
-
-        function loadInterface() {
-            const currentUser = sessionStorage.getItem('active_session');
-            if (!currentUser) return;
-
+            // Cambiar vista de interfaz
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('site-header').classList.remove('hidden');
             document.getElementById('site-content').classList.remove('hidden');
 
-            if (currentUser === 'traco_games') {
+            if (sessionUser.isAdmin) {
                 document.getElementById('menu-admin-btn').classList.remove('hidden');
-            }
-            if (currentUser === 'guest') {
-                document.getElementById('user-profile-bar').classList.add('hidden');
-                document.getElementById('logout-btn-nav').innerHTML = `<a onclick="logout()" style="color: var(--neon-blue); margin-left:15px;">INICIAR SESIÓN</a>`;
+            } else {
+                document.getElementById('menu-admin-btn').classList.add('hidden');
             }
 
-            fetchAllCloudData();
-            setInterval(fetchAllCloudData, 3000);
+            updateLiveUserBar();
             showSection('home');
-        }
+        };
 
         function updateLiveUserBar() {
-            const session = sessionStorage.getItem('active_session');
-            if(!session || session === 'guest') return;
-
-            let myData = globalUsersList.find(u => u.username.toLowerCase() === session);
-            if(myData) {
-                document.getElementById('bar-username').innerText = myData.username;
-                const bClan = document.getElementById('bar-clan');
-                bClan.innerText = "Clan " + myData.clan;
-                bClan.className = "clan-badge " + getClanClass(myData.clan);
-                document.getElementById('bar-level').innerText = myData.level || 0;
-                document.getElementById('bar-kills').innerText = myData.kills || 0;
-                document.getElementById('bar-clan-select').value = myData.clan || 'Ninguno';
-            }
+            if(!sessionUser) return;
+            document.getElementById('bar-username').innerText = sessionUser.username;
+            const bClan = document.getElementById('bar-clan');
+            bClan.innerText = "Clan " + (sessionUser.clan || 'Ninguno');
+            bClan.className = "clan-badge " + getClanClass(sessionUser.clan);
+            document.getElementById('bar-level').innerText = sessionUser.level;
+            document.getElementById('bar-kills').innerText = sessionUser.kills;
+            document.getElementById('bar-clan-select').value = sessionUser.clan || 'Ninguno';
         }
 
-        function showSection(id) {
+        window.logout = function() {
+            location.reload();
+        };
+
+        window.showSection = function(id) {
             document.querySelectorAll('#site-content > div').forEach(p => p.classList.add('hidden'));
             document.getElementById(id + '-content').classList.remove('hidden');
             window.scrollTo(0,0);
-        }
+        };
 
-        // --- CLASIFICACIÓN DINÁMICA ---
+        // --- CAMBIAR CLAN CON ADVERTENCIA ---
+        window.changeClanDirectly = async function(newClan) {
+            if(!sessionUser) return;
+            
+            if(sessionUser.isAdmin) {
+                sessionUser.clan = newClan;
+                await update(ref(db, `users/${sessionUser.id}`), { clan: newClan });
+                updateLiveUserBar();
+                return;
+            }
+
+            if(confirm("⚠️ ADVERTENCIA DE TRAICIÓN:\n¿Seguro que quieres cambiar de bando? Perderás todo tu nivel y kills acumulados.")){
+                sessionUser.clan = newClan;
+                sessionUser.level = 0;
+                sessionUser.kills = 0;
+                await update(ref(db, `users/${sessionUser.id}`), { clan: newClan, level: 0, kills: 0 });
+                updateLiveUserBar();
+            } else {
+                updateLiveUserBar();
+            }
+        };
+
+        // --- TRANSMISIÓN EN TIEMPO REAL ---
+        function startListeners() {
+            // Usuarios / Ranking
+            onValue(ref(db, 'users'), (snapshot) => {
+                const data = snapshot.val();
+                globalUsersList = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+                renderLeaderboard();
+                renderAdminUserSelect();
+                
+                // Actualizar la barra local si cambian los datos en la nube
+                if(sessionUser) {
+                    let liveMe = globalUsersList.find(u => u.id === sessionUser.id);
+                    if(liveMe) {
+                        sessionUser = liveMe;
+                        updateLiveUserBar();
+                    }
+                }
+            });
+
+            // Chat
+            onValue(ref(db, 'chat'), (snapshot) => {
+                const data = snapshot.val();
+                chatMessages = data ? Object.keys(data).map(k => ({id: k, ...data[k]})) : [];
+                renderChat();
+            });
+
+            // Secciones dinámicas
+            const nodes = ['pvp_classes', 'pvp_news', 'pvp_blog', 'pvp_gallery', 'config'];
+            nodes.forEach(node => {
+                onValue(ref(db, node), (snapshot) => {
+                    cloudData[node] = snapshot.val() || (node === 'config' ? { pvp_game_url: "#" } : []);
+                    refreshSiteData();
+                });
+            });
+        }
+        startListeners();
+
+        // --- CLASIFICACIÓN ---
         function renderLeaderboard() {
             const listElement = document.getElementById('leader-list');
             if(!listElement) return;
 
-            // Ordenar por Kills y luego por Nivel de forma descendente
-            let sortedUsers = [...globalUsersList].sort((a,b) => {
+            let sorted = [...globalUsersList].sort((a,b) => {
                 let scoreB = (parseInt(b.kills) || 0) + (parseInt(b.level) || 0) * 10;
                 let scoreA = (parseInt(a.kills) || 0) + (parseInt(a.level) || 0) * 10;
                 return scoreB - scoreA;
             });
 
-            listElement.innerHTML = sortedUsers.map((user, index) => {
-                const isTraco = user.username.toLowerCase() === 'traco_games';
+            listElement.innerHTML = sorted.map((user, index) => {
+                const isTraco = user.id === 'traco_games_admin' || user.username.toLowerCase() === 'traco_games';
                 return `<tr class="${isTraco ? 'row-admin-or' : ''}">
                     <td><strong>#${index + 1}</strong></td>
-                    <td style="${isTraco ? 'color: var(--neon-pink); font-weight:bold; text-shadow:0 0 5px var(--neon-pink)' : ''}">
-                        ${user.username} ${isTraco ? ' 🎖️' : ''}
-                    </td>
+                    <td style="${isTraco ? 'color: var(--neon-pink); font-weight:bold; text-shadow:0 0 5px var(--neon-pink)' : ''}">${user.username}</td>
                     <td><span class="clan-badge ${getClanClass(user.clan)}">${user.clan || 'Ninguno'}</span></td>
-                    <td><span style="font-weight:bold; color:${isTraco ? 'var(--neon-pink)' : '#fff'}">${isTraco ? '⚡ ADMIN ORIGINAL' : getPvpRange(user.level)}</span></td>
+                    <td><span style="font-weight:bold;">${isTraco ? '⚡ ADMIN ORIGINAL' : getPvpRange(user.level)}</span></td>
                     <td>${isTraco ? '∞' : (user.level || 0)}</td>
                     <td>${user.kills || 0}</td>
                 </tr>`;
             }).join('');
         }
 
-        // --- SISTEMA DE CHAT EN VIVO ---
-        async function sendChatMessage() {
-            const session = sessionStorage.getItem('active_session');
-            const name = sessionStorage.getItem('display_name');
+        // --- CHAT GLOBAL ---
+        window.sendChatMessage = async function() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
+            if(!text || !sessionUser) return;
 
-            if (!text) return;
-            if (!session || session === 'guest') {
-                alert("🛑 Registrate para hablar en el chat.");
-                input.value = '';
-                return;
-            }
             if (isMessageInappropriate(text)) {
                 alert("⚠️ Mensaje bloqueado por el filtro automático.");
                 input.value = '';
                 return;
             }
 
-            // Buscar bando del usuario para pintarlo en su mensaje
-            let userClan = "Ninguno";
-            let dbUser = globalUsersList.find(u => u.username.toLowerCase() === session);
-            if(dbUser) userClan = dbUser.clan;
-
-            const newMsg = {
-                user: name,
-                clan: userClan,
-                isTracoAdmin: session === 'traco_games',
+            const msg = {
+                user: sessionUser.username,
+                clan: sessionUser.clan,
+                isAdminMsg: sessionUser.isAdmin,
                 text: text,
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
-            await fetch(`${FB_URL}/chat.json`, { method: 'POST', body: JSON.stringify(newMsg) });
+            await push(ref(db, 'chat'), msg);
             input.value = '';
-            fetchAllCloudData();
-        }
+        };
 
         function renderChat() {
             const box = document.getElementById('chat-box');
-            if (!box) return;
-            const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
+            if(!box) return;
+            const isMeAdmin = sessionUser && sessionUser.isAdmin;
 
-            box.innerHTML = chatMessages.map(m => {
-                return `<div class="chat-msg">
+            box.innerHTML = chatMessages.map(m => `
+                <div class="chat-msg">
                     <div class="content-area">
-                        ${m.isTracoAdmin ? '<span class="admin-tag">ADMIN ORIGINAL</span>' : `<span class="clan-badge ${getClanClass(m.clan)}">${m.clan || 'Neutral'}</span>`}
-                        <span class="user" style="${m.isTracoAdmin ? 'color: var(--neon-pink); text-shadow:0 0 5px var(--neon-pink);' : ''}">${m.user}:</span>
+                        ${m.isAdminMsg ? '<span class="admin-tag">ADMIN ORIGINAL</span>' : `<span class="clan-badge ${getClanClass(m.clan)}">${m.clan}</span>`}
+                        <span class="user" style="${m.isAdminMsg ? 'color: var(--neon-pink); text-shadow:0 0 5px var(--neon-pink);' : ''}">${m.user}:</span>
                         <span class="text">${m.text}</span>
                         <span class="time">${m.time}</span>
                     </div>
-                    ${isTraco ? `<button class="btn-msg-del" onclick="deleteChatMessage('${m.id}')">X</button>` : ''}
-                </div>`;
-            }).join('');
+                    ${isMeAdmin ? `<button class="btn-msg-del" data-id="${m.id}">X</button>` : ''}
+                </div>
+            `).join('');
+            box.scrollTop = box.scrollHeight;
+
+            if(isMeAdmin) {
+                document.querySelectorAll('.btn-msg-del').forEach(btn => {
+                    btn.onclick = async function() { await remove(ref(db, `chat/${this.getAttribute('data-id')}`)); };
+                });
+            }
         }
 
-        async function deleteChatMessage(msgId) {
-            if(!confirm("¿Eliminar mensaje?")) return;
-            await fetch(`${FB_URL}/chat/${msgId}.json`, { method: 'DELETE' });
-            fetchAllCloudData();
-        }
+        // --- REFRESCAR CONTENIDOS ---
+        function refreshSiteData() {
+            const playBtn = document.getElementById('play-btn');
+            if(playBtn) playBtn.href = cloudData.config?.pvp_game_url || "#";
 
-        // --- GESTIÓN DE JUGADORES POR EL ADMIN ORIGINAL ---
-        async function modifyUserStatsAdmin() {
-            const targetUser = document.getElementById('adm-user-search').value.trim().toLowerCase();
-            const newLvl = parseInt(document.getElementById('adm-user-lvl').value);
-            const newKills = parseInt(document.getElementById('adm-user-kills').value);
-
-            if(!targetUser || isNaN(newLvl) || isNaN(newKills)) return alert("Completa todos los campos de edición.");
-
-            const checkRes = await fetch(`${FB_URL}/users/${targetUser}.json`);
-            const userExist = await checkRes.json();
-
-            if(!userExist && targetUser !== 'traco_games') return alert("Ese jugador no existe en la base de datos.");
-
-            const updates = { level: newLvl, kills: newKills };
-            
-            if(targetUser === 'traco_games') {
-                // Modificar tus propios datos guardados localmente
-                await fetch(`${FB_URL}/users/traco_games.json`, { method: 'PATCH', body: JSON.stringify({username:'Traco_Games', clan:'Dragón', ...updates}) });
-            } else {
-                await fetch(`${FB_URL}/users/${targetUser}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
+            // Noticias
+            const newsBox = document.getElementById('news-container');
+            if (newsBox) {
+                const arr = cloudData.pvp_news ? Object.keys(cloudData.pvp_news).map(k => cloudData.pvp_news[k]).filter(n => n.status === 'publicado') : [];
+                newsBox.innerHTML = arr.map(n => `<div class="card"><h3>${n.title}</h3><p>${n.body}</p></div>`).join('');
             }
 
-            alert(`¡Estadísticas de ${targetUser} actualizadas en vivo!`);
-            document.getElementById('adm-user-search').value = '';
+            // Clases
+            const classBox = document.getElementById('classes-container');
+            if (classBox) {
+                const arr = cloudData.pvp_classes ? Object.keys(cloudData.pvp_classes).map(k => cloudData.pvp_classes[k]).filter(c => c.status === 'publicado') : [];
+                classBox.innerHTML = arr.map(c => `<div class="card"><h3>⚔️ ${c.name}</h3><p>${c.desc}</p><small style="color:var(--neon-blue)">Habilidades: ${c.skills}</small></div>`).join('');
+            }
+
+            // Blog
+            const bContainer = document.getElementById('blog-container');
+            if (bContainer) {
+                const arr = cloudData.pvp_blog ? Object.keys(cloudData.pvp_blog).map(k => cloudData.pvp_blog[k]).filter(b => b.status === 'publicado') : [];
+                bContainer.innerHTML = arr.map(b => `<div class="card" style="margin-bottom:20px;"><h3>${b.title}</h3><p>${b.body}</p></div>`).join('');
+            }
+
+            // Galería
+            const galBox = document.getElementById('gallery-container');
+            if (galBox) {
+                const arr = cloudData.pvp_gallery ? Object.keys(cloudData.pvp_gallery).map(k => cloudData.pvp_gallery[k]) : [];
+                galBox.innerHTML = arr.map(p => `<div class="card" style="padding:10px;"><img src="${p.url}" style="width:100%; border-radius:10px; border:1px solid #333;"></div>`).join('');
+            }
+        }
+
+        // --- PANEL DE CONTROL MAESTRO ---
+        function renderAdminUserSelect() {
+            const select = document.getElementById('adm-user-select');
+            if(!select) return;
+            select.innerHTML = globalUsersList.map(u => `<option value="${u.id}">${u.username}</option>`).join('');
+        }
+
+        window.modifyUserStatsAdmin = async function() {
+            const id = document.getElementById('adm-user-select').value;
+            const lvl = parseInt(document.getElementById('adm-user-lvl').value);
+            const kills = parseInt(document.getElementById('adm-user-kills').value);
+
+            if(!id) return alert("Selecciona un jugador.");
+            const updates = {};
+            if(!isNaN(lvl)) updates.level = lvl;
+            if(!isNaN(kills)) updates.kills = kills;
+
+            await update(ref(db, `users/${id}`), updates);
+            alert("Estadísticas del piloto actualizadas.");
             document.getElementById('adm-user-lvl').value = '';
             document.getElementById('adm-user-kills').value = '';
-            fetchAllCloudData();
-        }
+        };
 
-        // --- RENDERIZADOS SECUNDARIOS ---
-        function refreshSiteData() {
-            const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
-            document.getElementById('play-btn').href = cloudData.config.pvp_game_url || "#";
-            
-            // Renderizar noticias, clases, blog, galería... (se mantiene idéntico a tu sistema anterior)
-            document.getElementById('news-container').innerHTML = cloudData.pvp_news.map((n, i) => {
-                if (!n) return ''; if (n.status !== 'publicado' && !isTraco) return '';
-                return `<div class="card"><h3>${n.title}</h3><p>${n.body}</p></div>`;
-            }).join('');
+        window.saveGlobalConfig = async function() {
+            const url = document.getElementById('adm-game-url').value.trim();
+            if(!url) return;
+            await set(ref(db, 'config'), { pvp_game_url: url });
+            alert("Enlace sincronizado con éxito.");
+            document.getElementById('adm-game-url').value = '';
+        };
 
-            document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map((c, i) => {
-                if (!c) return ''; if (c.status !== 'publicado' && !isTraco) return '';
-                return `<div class="card"><h3>${c.name}</h3><p>${c.desc}</p><ul class="ability-list">${c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('')}</ul></div>`;
-            }).join('');
-        }
+        window.saveFormItem = async function(node, data, status) {
+            if(!data.name && !data.title) return alert("Completa el formulario.");
+            await push(ref(db, node), { ...data, status: status });
+            alert(`Guardado como ${status}`);
+            document.getElementById('c-name').value = ''; document.getElementById('c-desc').value = ''; document.getElementById('c-skills').value = '';
+            document.getElementById('n-title').value = ''; document.getElementById('n-body').value = '';
+            document.getElementById('b-title').value = ''; document.getElementById('b-body').value = '';
+        };
 
-        async function saveGlobalConfig() {
-            cloudData.config.pvp_game_url = document.getElementById('adm-game-url').value;
-            await syncToFirebase('config'); alert("Link de juego sincronizado."); fetchAllCloudData();
-        }
-        async function saveFormItem(key, obj, editIdxId, status) {
-            obj.status = status; cloudData[key].push(obj); await syncToFirebase(key); fetchAllCloudData(); alert("Contenido guardado.");
-        }
-
-        window.onload = function() {
-            const active = sessionStorage.getItem('active_session');
-            if (active) { loadInterface(); }
+        window.saveGalleryItem = async function() {
+            const url = document.getElementById('g-url').value.trim();
+            if(!url) return;
+            await push(ref(db, 'pvp_gallery'), { url: url });
+            alert("Foto añadida.");
+            document.getElementById('g-url').value = '';
         };
     </script>
 </body>
