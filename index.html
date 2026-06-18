@@ -6,7 +6,6 @@
     <title>PVP of Friends - Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     
-    <!-- Librerías estables de Firebase -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -29,11 +28,6 @@
         .section-title { text-align: center; font-size: 2.5em; margin-bottom: 40px; color: var(--neon-blue); text-shadow: 0 0 15px var(--neon-blue); }
 
         .hero-banner { height: 50vh; background: linear-gradient(rgba(0,0,0,0.6), var(--dark-bg)), url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070') center/cover; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .play-btn { background: var(--neon-pink); color: white; padding: 20px 50px; text-decoration: none; border-radius: 5px; box-shadow: 0 0 20px var(--neon-pink); font-family: 'Orbitron'; font-size: 1.5em; transition: 0.3s; }
-        .play-btn:hover { transform: scale(1.1); box-shadow: 0 0 40px var(--neon-pink); }
-
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
-        .card { background: var(--card-bg); border: 1px solid #222; padding: 30px; border-radius: 15px; border-left: 4px solid var(--neon-blue); position: relative; }
         
         /* CLANES */
         .clan-badge { font-family: 'Orbitron'; font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
@@ -42,16 +36,14 @@
         .clan-espectro { background: #9b59b6; color: #fff; box-shadow: 0 0 8px #9b59b6; }
         .clan-ninguno { background: #444; color: #aaa; }
 
-        /* PERFIL DE USUARIO */
+        /* BARRA PERFIL DE USUARIO */
         .user-status-bar { background: #111; border: 1px solid #222; padding: 15px 25px; border-radius: 10px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
-        .clan-selector { background: #000; color: #fff; border: 1px solid #444; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
 
         /* CLASIFICACIÓN */
         .leaderboard-container { background: var(--card-bg); border: 1px solid #222; border-radius: 15px; overflow: hidden; margin-bottom: 60px; }
         .leaderboard-table { width: 100%; border-collapse: collapse; }
         .leaderboard-table th { background: #111; color: var(--neon-blue); padding: 15px; text-align: left; font-family: 'Orbitron'; }
         .leaderboard-table td { padding: 15px; border-bottom: 1px solid #1a1a1a; }
-        .row-admin-or { background: rgba(255, 64, 129, 0.08); border-left: 4px solid var(--neon-pink); }
 
         /* AUTENTICACIÓN */
         .auth-box { max-width: 400px; margin: 120px auto; background: var(--card-bg); border: 1px solid #333; padding: 40px; border-radius: 15px; border-top: 4px solid var(--neon-pink); text-align: center; }
@@ -61,21 +53,17 @@
         .btn-alt { background: transparent; border: 1px solid #444; color: #aaa; margin-top: 15px; }
         .btn-alt:hover { border-color: var(--neon-blue); color: #fff; box-shadow: 0 0 10px var(--neon-blue); }
 
-        /* SALA DE CHAT */
+        /* CHAT */
         .chat-container-box { max-width: 800px; margin: 0 auto; background: #0a0a0a; border: 1px solid #222; border-radius: 15px; padding: 25px; border-top: 4px solid var(--neon-pink); display: flex; flex-direction: column; height: 500px; }
         .chat-messages { flex-grow: 1; overflow-y: auto; padding: 15px; background: #050505; border-radius: 8px; margin-bottom: 15px; border: 1px solid #111; }
-        .chat-msg { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 0.95em; padding: 6px; border-radius: 6px; }
-        .chat-msg:hover { background: #0f0f0f; }
-        .chat-msg .content-area { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-        .chat-msg .user { font-weight: bold; color: var(--neon-blue); }
-        .chat-msg .time { font-size: 0.75em; color: #555; }
+        .chat-msg { margin-bottom: 12px; font-size: 0.95em; padding: 6px; border-radius: 6px; background: #0c0c0c; border-left: 3px solid var(--neon-blue); }
+        .chat-msg .user { font-weight: bold; color: var(--neon-blue); margin-right: 5px; }
         .chat-input-area { display: flex; gap: 10px; }
         .chat-input-area input { flex-grow: 1; padding: 14px; background: #000; border: 1px solid #333; color: #fff; border-radius: 8px; }
     </style>
 </head>
 <body>
 
-    <!-- CABECERA -->
     <header class="main-header hidden" id="site-header">
         <div class="header-content">
             <div class="logo" onclick="showSection('home')"><h1>PVP OF FRIENDS</h1></div>
@@ -89,7 +77,6 @@
         </div>
     </header>
 
-    <!-- ACCESO -->
     <div id="auth-section" class="container">
         <div class="auth-box">
             <h2 id="auth-title" style="color: #fff; font-size: 1.8em;">INGRESAR AL SISTEMA</h2>
@@ -113,7 +100,6 @@
         </div>
     </div>
 
-    <!-- CONTENIDO GENERAL -->
     <div id="site-content" class="hidden">
         <div id="home-content">
             <section class="hero-banner">
@@ -137,7 +123,6 @@
             </div>
         </div>
 
-        <!-- SCON CHAT -->
         <div id="chat-content" class="container hidden">
             <h2 class="section-title">SALA GLOBAL DE COMBATE</h2>
             <div class="chat-container-box">
@@ -151,13 +136,19 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN OFICIAL COMPLETA PARA EVITAR ERRORES DE INICIALIZACIÓN
+        // TU CONFIGURACIÓN REAL INTEGRADA CORRECTAMENTE SIN MÓDULOS DE IMPORTACIÓN
         var firebaseConfig = {
-            apiKey: "AIzaSyAsFakeKey_JustForStructure", 
+            apiKey: "AIzaSyAXx5euZ0r6TlzLz_MlO-gE-7z0BKFm_qE",
+            authDomain: "pvp-friends-47018.firebaseapp.com",
             databaseURL: "https://pvp-friends-47018-default-rtdb.firebaseio.com",
-            projectId: "pvp-friends-47018"
+            projectId: "pvp-friends-47018",
+            storageBucket: "pvp-friends-47018.firebasestorage.app",
+            messagingSenderId: "1065559195542",
+            appId: "1:1065559195542:web:842d2a2f380d3133c327b7",
+            measurementId: "G-BQGCBT3TK3"
         };
         
+        // Inicialización global
         firebase.initializeApp(firebaseConfig);
         var db = firebase.database();
 
@@ -166,34 +157,25 @@
         var globalUsersList = [];
         var isRegisterMode = false;
 
+        function getPvpRange(level) {
+            let lvl = parseInt(level) || 0;
+            if (lvl >= 100) return "👑 Dios del PVP";
+            if (lvl >= 60) return "✨ Leyenda";
+            if (lvl >= 30) return "🥇 Maestro";
+            if (lvl >= 10) return "🥈 Guerrero";
+            return "🥉 Recluta";
+        }
+
         function getClanClass(clan) {
             if(clan === 'Dragón') return 'clan-dragon';
             if(clan === 'Fénix') return 'clan-fenix';
             if(clan === 'Espectro') return 'clan-espectro';
             return 'clan-ninguno';
-    
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+        }
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyAXx5euZ0r6TlzLz_MlO-gE-7z0BKFm_qE",
-  authDomain: "pvp-friends-47018.firebaseapp.com",
-  databaseURL: "https://pvp-friends-47018-default-rtdb.firebaseio.com",
-  projectId: "pvp-friends-47018",
-  storageBucket: "pvp-friends-47018.firebasestorage.app",
-  messagingSenderId: "1065559195542",
-  appId: "1:1065559195542:web:842d2a2f380d3133c327b7",
-  measurementId: "G-BQGCBT3TK3"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+        window.toggleAuthMode = function() {
+            isRegisterMode = !isRegisterMode;
+            document.getElementById('auth-title').innerText = isRegisterMode ? "REGISTRAR PILOTO NUEVO" : "INGRESAR AL SISTEMA";
             if(isRegisterMode) {
                 document.getElementById('register-fields').classList.remove('hidden');
                 document.getElementById('btn-primary-auth').innerText = "CREAR CUENTA Y ENTRAR";
@@ -299,7 +281,7 @@ const analytics = getAnalytics(app);
                         <td><strong>#${i + 1}</strong></td>
                         <td>${user.username}</td>
                         <td><span class="clan-badge ${getClanClass(user.clan)}">${user.clan}</span></td>
-                        <td>${user.isAdmin ? '⚡ ADMIN' : '🥉 Piloto'}</td>
+                        <td>${user.isAdmin ? '⚡ ADMIN' : getPvpRange(user.level)}</td>
                         <td>${user.level || 0}</td>
                         <td>${user.kills || 0}</td>
                     </tr>`;
@@ -314,9 +296,7 @@ const analytics = getAnalytics(app);
             if(box) {
                 box.innerHTML = messages.map(function(m) {
                     return `<div class="chat-msg">
-                        <div class="content-area">
-                            <span class="user">${m.user}:</span> <span class="text">${m.text}</span>
-                        </div>
+                        <span class="user">${m.user}:</span> <span class="text">${m.text}</span>
                     </div>`;
                 }).join('');
                 box.scrollTop = box.scrollHeight;
