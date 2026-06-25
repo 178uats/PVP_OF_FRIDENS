@@ -29,7 +29,7 @@
 
         .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
         .card { background: var(--card-bg); border: 1px solid #222; padding: 30px; border-radius: 15px; border-left: 4px solid var(--neon-blue); position: relative; }
-        
+       
         /* ESTILOS DE CLANES */
         .clan-badge { font-family: 'Orbitron'; font-size: 0.8em; padding: 3px 8px; border-radius: 4px; font-weight: bold; display: inline-block; }
         .clan-dragon { background: #ff4d4d; color: #000; box-shadow: 0 0 8px #ff4d4d; }
@@ -72,15 +72,10 @@
         .admin-panel input, .admin-panel textarea { width: 100%; padding: 10px; margin: 8px 0; background: #000; border: 1px solid #444; color: #fff; border-radius: 6px; box-sizing: border-box; }
         .btn-group { display: flex; gap: 10px; margin-top: 8px; }
         .btn-borr { background: #444; }
-        .btn-edit { background: var(--neon-blue); color: #000; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; }
-        .btn-del { background: #ff4444; color: #fff; font-size: 0.75em; padding: 4px 8px; border-radius: 4px; border: none; cursor: pointer; margin-left: 5px; }
-        .status-tag { font-size: 0.7em; padding: 2px 6px; border-radius: 4px; margin-left: 10px; font-weight: bold; }
-        .admin-controls-inline { margin-top: 15px; display: flex; justify-content: flex-end; gap: 5px; }
     </style>
 </head>
 <body>
 
-    <!-- CABECERA PRINCIPAL -->
     <header class="main-header hidden" id="site-header">
         <div class="header-content">
             <div class="logo" onclick="showSection('home')"><h1>PVP OF FRIENDS</h1></div>
@@ -98,7 +93,6 @@
         </div>
     </header>
 
-    <!-- PANTALLA DE ACCESO -->
     <div id="auth-section" class="container">
         <div class="auth-box" id="login-form">
             <h2 style="color: #fff; font-size: 1.8em;">INICIAR SESIÓN</h2>
@@ -125,18 +119,14 @@
         </div>
     </div>
 
-    <!-- CONTENIDO GENERAL -->
     <div id="site-content" class="hidden">
-        
-        <!-- SECCIÓN INICIO -->
         <div id="home-content">
             <section class="hero-banner">
                 <h2 style="font-size: 4em; color:white; text-shadow: 0 0 20px var(--neon-blue);">PVP OF FRIENDS</h2>
                 <a href="#" id="play-btn" class="play-btn" target="_blank">JUGAR AHORA</a>
             </section>
-            
+           
             <div class="container">
-                <!-- Barra de estado del Jugador Logueado -->
                 <div class="user-status-bar" id="user-profile-bar">
                     <div>👑 Jugador: <span id="bar-username" style="font-weight:bold; color:var(--neon-blue)">-</span></div>
                     <div>Clan Actual: <span id="bar-clan" class="clan-badge clan-ninguno">Ninguno</span></div>
@@ -165,7 +155,6 @@
             </div>
         </div>
 
-        <!-- SECCIÓN DE CHAT -->
         <div id="chat-content" class="container hidden">
             <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">SALA GLOBAL DE COMBATE</h2>
             <div class="chat-container-box">
@@ -177,28 +166,24 @@
             </div>
         </div>
 
-        <!-- SECCIÓN CLASES -->
         <div id="clases-content" class="container hidden">
             <h2 class="section-title">Clases de Combate</h2>
             <div id="classes-container" class="grid"></div>
         </div>
 
-        <!-- SECCIÓN BLOG -->
         <div id="blog-content" class="container hidden">
             <h2 class="section-title">Diario de Desarrollo</h2>
             <div id="blog-container"></div>
         </div>
 
-        <!-- SECCIÓN MEDIOS -->
         <div id="medios-content" class="container hidden">
             <h2 class="section-title">Galería de Medios</h2>
             <div id="gallery-container" class="grid"></div>
         </div>
 
-        <!-- PANEL DE ADMINISTRADOR -->
         <div id="admin-content" class="container hidden">
             <h2 class="section-title" style="color: var(--neon-pink); text-shadow: 0 0 15px var(--neon-pink);">PANEL MAESTRO DE CONTROL</h2>
-            
+           
             <div class="admin-panel" style="border-top-color: #fff;">
                 <h3>📊 GESTIONAR ESTADÍSTICAS DE JUGADORES</h3>
                 <label style="font-size:0.9em; color:#aaa;">Buscar Usuario Registrado:</label>
@@ -259,7 +244,8 @@
     </div>
 
     <script>
-        const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com";
+        // URL CORREGIDA CON LA BARRA DIAGONAL AL FINAL OBLIGATORIA PARA PETICIONES REST
+        const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com/";
 
         let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
         let chatMessages = [];
@@ -272,7 +258,6 @@
             return badWords.some(word => cleanText.includes(word));
         }
 
-        // Calcular el Rango en base al Nivel
         function getPvpRange(level) {
             let lvl = parseInt(level) || 0;
             if (lvl >= 100) return "👑 Dios del PVP";
@@ -289,10 +274,9 @@
             return 'clan-ninguno';
         }
 
-        // Descarga de datos
         async function fetchAllCloudData() {
             try {
-                const res = await fetch(`${FB_URL}/.json`);
+                const res = await fetch(`${FB_URL}.json`);
                 const data = await res.json();
                 if (data) {
                     cloudData.pvp_classes = data.pvp_classes || [];
@@ -300,20 +284,17 @@
                     cloudData.pvp_blog = data.pvp_blog || [];
                     cloudData.pvp_gallery = data.pvp_gallery || [];
                     cloudData.config = data.config || { pvp_game_url: "#" };
-                    
-                    // Procesar lista global de cuentas registradas
+                   
                     if (data.users) {
                         globalUsersList = Object.keys(data.users).map(key => data.users[key]);
                     } else {
                         globalUsersList = [];
                     }
 
-                    // Forzar que Traco_Games siempre aparezca en la base de datos de clasificación con datos por defecto si no existe
                     let tracoInList = globalUsersList.find(u => u.username.toLowerCase() === 'traco_games');
                     if(!tracoInList) {
                         globalUsersList.push({ username: 'Traco_Games', clan: 'Dragón', level: 999, kills: 99999 });
                     } else {
-                        // Asegurar que mantenga nivel legendario de creador si no se le ha editado
                         if(!tracoInList.level) tracoInList.level = 999;
                         if(!tracoInList.kills) tracoInList.kills = 99999;
                     }
@@ -328,14 +309,13 @@
                 renderLeaderboard();
                 renderChat();
                 updateLiveUserBar();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Error cargando base de datos:", e); }
         }
 
         async function syncToFirebase(key) {
-            await fetch(`${FB_URL}/${key}.json`, { method: 'PUT', body: JSON.stringify(cloudData[key]) });
+            await fetch(`${FB_URL}${key}.json`, { method: 'PUT', body: JSON.stringify(cloudData[key]) });
         }
 
-        // --- REGISTRO CON CLAN ---
         async function register() {
             const user = document.getElementById('reg-user').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
@@ -344,19 +324,13 @@
             if (!user || !pass) return alert("Completa los datos.");
             if (user.toLowerCase() === 'traco_games' || user.toLowerCase() === 'admin') return alert("Nombre reservado.");
 
-            const res = await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`);
+            const res = await fetch(`${FB_URL}users/${user.toLowerCase()}.json`);
             const exists = await res.json();
             if (exists) return alert("El usuario ya existe.");
 
-            const newUserObj = {
-                username: user,
-                pass: pass,
-                clan: clan,
-                level: 0,
-                kills: 0
-            };
+            const newUserObj = { username: user, pass: pass, clan: clan, level: 0, kills: 0 };
 
-            await fetch(`${FB_URL}/users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify(newUserObj) });
+            await fetch(`${FB_URL}users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify(newUserObj) });
             alert("¡Cuenta de guerrero creada con éxito!");
             toggleAuth(false);
         }
@@ -372,7 +346,7 @@
                 return;
             }
 
-            const res = await fetch(`${FB_URL}/users/${userInput.toLowerCase()}.json`);
+            const res = await fetch(`${FB_URL}users/${userInput.toLowerCase()}.json`);
             const userData = await res.json();
 
             if (userData && userData.pass === pass) {
@@ -384,28 +358,22 @@
             }
         }
 
-        // CAMBIAR DE CLAN DIRECTO (CON REINICIO DE ESTADÍSTICAS)
         async function changeClanDirectly(newClan) {
             const session = sessionStorage.getItem('active_session');
             if(session === 'guest') return alert("Los visitantes no tienen clan.");
             if(session === 'traco_games') {
-                // Traco es inmune al reinicio por ser el admin original
-                await fetch(`${FB_URL}/users/traco_games/clan.json`, { method: 'PUT', body: JSON.stringify(newClan) });
+                await fetch(`${FB_URL}users/traco_games/clan.json`, { method: 'PUT', body: JSON.stringify(newClan) });
                 fetchAllCloudData();
                 return;
             }
 
             if(confirm("⚠️ ADVERTENCIA DE TRAICIÓN:\n¿Estás seguro de cambiar de clan? Si te unes a un nuevo clan, perderás todo tu progreso actual. Tu nivel y tus bajas volverán a 0 inmediatamente.")){
-                const updates = {
-                    clan: newClan,
-                    level: 0,
-                    kills: 0
-                };
-                await fetch(`${FB_URL}/users/${session}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
+                const updates = { clan: newClan, level: 0, kills: 0 };
+                await fetch(`${FB_URL}users/${session}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
                 alert("Te has cambiado de bando. Tu progreso ha sido reiniciado.");
                 fetchAllCloudData();
             } else {
-                fetchAllCloudData(); // Revierte el selector visual
+                fetchAllCloudData();
             }
         }
 
@@ -464,18 +432,15 @@
             window.scrollTo(0,0);
         }
 
-        // --- CLASIFICACIÓN DINÁMICA ---
         function renderLeaderboard() {
             const listElement = document.getElementById('leader-list');
             if(!listElement) return;
 
-            // Ordenar por Kills y luego por Nivel de forma descendente
             let sortedUsers = [...globalUsersList].sort((a,b) => {
                 let scoreB = (parseInt(b.kills) || 0) + (parseInt(b.level) || 0) * 10;
                 let scoreA = (parseInt(a.kills) || 0) + (parseInt(a.level) || 0) * 10;
                 return scoreB - scoreA;
             });
-
             listElement.innerHTML = sortedUsers.map((user, index) => {
                 const isTraco = user.username.toLowerCase() === 'traco_games';
                 return `<tr class="${isTraco ? 'row-admin-or' : ''}">
@@ -491,7 +456,6 @@
             }).join('');
         }
 
-        // --- SISTEMA DE CHAT EN VIVO ---
         async function sendChatMessage() {
             const session = sessionStorage.getItem('active_session');
             const name = sessionStorage.getItem('display_name');
@@ -510,11 +474,9 @@
                 return;
             }
 
-            // Buscar bando del usuario para pintarlo en su mensaje
             let userClan = "Ninguno";
             let dbUser = globalUsersList.find(u => u.username.toLowerCase() === session);
             if(dbUser) userClan = dbUser.clan;
-
             const newMsg = {
                 user: name,
                 clan: userClan,
@@ -523,7 +485,7 @@
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
-            await fetch(`${FB_URL}/chat.json`, { method: 'POST', body: JSON.stringify(newMsg) });
+            await fetch(`${FB_URL}chat.json`, { method: 'POST', body: JSON.stringify(newMsg) });
             input.value = '';
             fetchAllCloudData();
         }
@@ -548,30 +510,25 @@
 
         async function deleteChatMessage(msgId) {
             if(!confirm("¿Eliminar mensaje?")) return;
-            await fetch(`${FB_URL}/chat/${msgId}.json`, { method: 'DELETE' });
+            await fetch(`${FB_URL}chat/${msgId}.json`, { method: 'DELETE' });
             fetchAllCloudData();
         }
 
-        // --- GESTIÓN DE JUGADORES POR EL ADMIN ORIGINAL ---
         async function modifyUserStatsAdmin() {
             const targetUser = document.getElementById('adm-user-search').value.trim().toLowerCase();
             const newLvl = parseInt(document.getElementById('adm-user-lvl').value);
             const newKills = parseInt(document.getElementById('adm-user-kills').value);
 
             if(!targetUser || isNaN(newLvl) || isNaN(newKills)) return alert("Completa todos los campos de edición.");
-
-            const checkRes = await fetch(`${FB_URL}/users/${targetUser}.json`);
+            const checkRes = await fetch(`${FB_URL}users/${targetUser}.json`);
             const userExist = await checkRes.json();
-
             if(!userExist && targetUser !== 'traco_games') return alert("Ese jugador no existe en la base de datos.");
-
             const updates = { level: newLvl, kills: newKills };
-            
+           
             if(targetUser === 'traco_games') {
-                // Modificar tus propios datos guardados localmente
-                await fetch(`${FB_URL}/users/traco_games.json`, { method: 'PATCH', body: JSON.stringify({username:'Traco_Games', clan:'Dragón', ...updates}) });
+                await fetch(`${FB_URL}users/traco_games.json`, { method: 'PATCH', body: JSON.stringify({username:'Traco_Games', clan:'Dragón', ...updates}) });
             } else {
-                await fetch(`${FB_URL}/users/${targetUser}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
+                await fetch(`${FB_URL}users/${targetUser}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
             }
 
             alert(`¡Estadísticas de ${targetUser} actualizadas en vivo!`);
@@ -581,17 +538,14 @@
             fetchAllCloudData();
         }
 
-        // --- RENDERIZADOS SECUNDARIOS ---
         function refreshSiteData() {
             const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
             document.getElementById('play-btn').href = cloudData.config.pvp_game_url || "#";
-            
-            // Renderizar noticias, clases, blog, galería... (se mantiene idéntico a tu sistema anterior)
+           
             document.getElementById('news-container').innerHTML = cloudData.pvp_news.map((n, i) => {
                 if (!n) return ''; if (n.status !== 'publicado' && !isTraco) return '';
                 return `<div class="card"><h3>${n.title}</h3><p>${n.body}</p></div>`;
             }).join('');
-
             document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map((c, i) => {
                 if (!c) return ''; if (c.status !== 'publicado' && !isTraco) return '';
                 return `<div class="card"><h3>${c.name}</h3><p>${c.desc}</p><ul class="ability-list">${c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('')}</ul></div>`;
@@ -603,7 +557,8 @@
             await syncToFirebase('config'); alert("Link de juego sincronizado."); fetchAllCloudData();
         }
         async function saveFormItem(key, obj, editIdxId, status) {
-            obj.status = status; cloudData[key].push(obj); await syncToFirebase(key); fetchAllCloudData(); alert("Contenido guardado.");
+            obj.status = status;
+            cloudData[key].push(obj); await syncToFirebase(key); fetchAllCloudData(); alert("Contenido guardado.");
         }
 
         window.onload = function() {
