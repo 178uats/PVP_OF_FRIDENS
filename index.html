@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PVP of Friends - Oficial</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         :root { --neon-blue: #00BCD4; --neon-pink: #FF4081; --dark-bg: #0D0D0D; --card-bg: #0a0a0a; --header-bg: #050505; }
         body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--dark-bg); color: #e0e0e0; overflow-x: hidden; }
@@ -120,6 +124,7 @@
     </div>
 
     <div id="site-content" class="hidden">
+       
         <div id="home-content">
             <section class="hero-banner">
                 <h2 style="font-size: 4em; color:white; text-shadow: 0 0 20px var(--neon-blue);">PVP OF FRIENDS</h2>
@@ -173,7 +178,7 @@
 
         <div id="blog-content" class="container hidden">
             <h2 class="section-title">Diario de Desarrollo</h2>
-            <div id="blog-container"></div>
+            <div id="blog-container" class="grid"></div>
         </div>
 
         <div id="medios-content" class="container hidden">
@@ -203,35 +208,32 @@
 
             <div class="admin-panel">
                 <h3 id="form-title-classes">⚔️ GESTIÓN DE CLASES</h3>
-                <input type="hidden" id="edit-idx-classes" value="-1">
                 <input id="c-name" placeholder="Nombre de la clase">
                 <input id="c-desc" placeholder="Descripción">
                 <input id="c-skills" placeholder="Habilidades (separadas por comas)">
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'borrador')">BORRADOR</button>
-                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'edit-idx-classes', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" onclick="saveFormItem('pvp_classes', {name:document.getElementById('c-name').value, desc:document.getElementById('c-desc').value, skills:document.getElementById('c-skills').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
             <div class="admin-panel" style="border-top-color: var(--neon-pink);">
                 <h3 id="form-title-news">📰 NOTICIAS Y NOVEDADES</h3>
-                <input type="hidden" id="edit-idx-news" value="-1">
                 <input id="n-title" placeholder="Título">
                 <textarea id="n-body" placeholder="Mensaje..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'edit-idx-news', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:var(--neon-pink);" onclick="saveFormItem('pvp_news', {title:document.getElementById('n-title').value, body:document.getElementById('n-body').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
             <div class="admin-panel" style="border-top-color: #9b59b6;">
                 <h3 id="form-title-blog">✍️ ENTRADAS DEL BLOG</h3>
-                <input type="hidden" id="edit-idx-blog" value="-1">
                 <input id="b-title" placeholder="Título del Post">
                 <textarea id="b-body" placeholder="Contenido del Post..."></textarea>
                 <div class="btn-group">
-                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'borrador')">BORRADOR</button>
-                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'edit-idx-blog', 'publicado')">PUBLICAR</button>
+                    <button class="btn btn-borr" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'borrador')">BORRADOR</button>
+                    <button class="btn" style="background:#9b59b6;" onclick="saveFormItem('pvp_blog', {title:document.getElementById('b-title').value, body:document.getElementById('b-body').value}, 'publicado')">PUBLICAR</button>
                 </div>
             </div>
 
@@ -244,8 +246,20 @@
     </div>
 
     <script>
-        // URL CORREGIDA CON LA BARRA DIAGONAL AL FINAL OBLIGATORIA PARA PETICIONES REST
-        const FB_URL = "https://pvp-friends-47018-default-rtdb.firebaseio.com/";
+        // TUS CREDENCIALES OFICIALES ASIGNADAS CORRECTAMENTE
+        var firebaseConfig = {
+            apiKey: "AIzaSyAXx5euZ0r6TlzLz_MlO-gE-7z0BKFm_qE",
+            authDomain: "pvp-friends-47018.firebaseapp.com",
+            databaseURL: "https://pvp-friends-47018-default-rtdb.firebaseio.com",
+            projectId: "pvp-friends-47018",
+            storageBucket: "pvp-friends-47018.firebasestorage.app",
+            messagingSenderId: "1065559195542",
+            appId: "1:1065559195542:web:842d2a2f380d3133c327b7",
+            measurementId: "G-BQGCBT3TK3"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        var db = firebase.database();
 
         let cloudData = { pvp_classes: [], pvp_news: [], pvp_blog: [], pvp_gallery: [], config: { pvp_game_url: "#" } };
         let chatMessages = [];
@@ -274,49 +288,45 @@
             return 'clan-ninguno';
         }
 
-        async function fetchAllCloudData() {
-            try {
-                const res = await fetch(`${FB_URL}.json`);
-                const data = await res.json();
-                if (data) {
-                    cloudData.pvp_classes = data.pvp_classes || [];
-                    cloudData.pvp_news = data.pvp_news || [];
-                    cloudData.pvp_blog = data.pvp_blog || [];
-                    cloudData.pvp_gallery = data.pvp_gallery || [];
-                    cloudData.config = data.config || { pvp_game_url: "#" };
-                   
-                    if (data.users) {
-                        globalUsersList = Object.keys(data.users).map(key => data.users[key]);
-                    } else {
-                        globalUsersList = [];
-                    }
+        // ESCUCHADORES EN VIVO AUTOMÁTICOS (REEMPLAZAN FETCH MANUAL Y SETINTERVAL)
+        function startRealtimeListeners() {
+            // Escuchar base general (Config, clases, noticias, blog, galería)
+            db.ref().on('value', function(snapshot) {
+                const data = snapshot.val() || {};
+                
+                cloudData.pvp_classes = data.pvp_classes ? Object.values(data.pvp_classes) : [];
+                cloudData.pvp_news = data.pvp_news ? Object.values(data.pvp_news) : [];
+                cloudData.pvp_blog = data.pvp_blog ? Object.values(data.pvp_blog) : [];
+                cloudData.pvp_gallery = data.pvp_gallery ? Object.values(data.pvp_gallery) : [];
+                cloudData.config = data.config || { pvp_game_url: "#" };
 
-                    let tracoInList = globalUsersList.find(u => u.username.toLowerCase() === 'traco_games');
-                    if(!tracoInList) {
-                        globalUsersList.push({ username: 'Traco_Games', clan: 'Dragón', level: 999, kills: 99999 });
-                    } else {
-                        if(!tracoInList.level) tracoInList.level = 999;
-                        if(!tracoInList.kills) tracoInList.kills = 99999;
-                    }
-
-                    if (data.chat) {
-                        chatMessages = Object.keys(data.chat).map(key => { return { id: key, ...data.chat[key] }; });
-                    } else {
-                        chatMessages = [];
-                    }
+                // Procesar usuarios
+                if (data.users) {
+                    globalUsersList = Object.keys(data.users).map(k => data.users[k]);
+                } else {
+                    globalUsersList = [];
                 }
+
+                // Mantener a Traco_Games visible
+                let tracoInList = globalUsersList.find(u => u.username.toLowerCase() === 'traco_games');
+                if(!tracoInList) {
+                    globalUsersList.push({ username: 'Traco_Games', clan: 'Dragón', level: 999, kills: 99999 });
+                }
+
                 refreshSiteData();
                 renderLeaderboard();
-                renderChat();
                 updateLiveUserBar();
-            } catch (e) { console.error("Error cargando base de datos:", e); }
+            });
+
+            // Escuchar chat en vivo de forma independiente
+            db.ref('chat').on('value', function(snapshot) {
+                const data = snapshot.val();
+                chatMessages = data ? Object.keys(data).map(key => { return { id: key, ...data[key] }; }) : [];
+                renderChat();
+            });
         }
 
-        async function syncToFirebase(key) {
-            await fetch(`${FB_URL}${key}.json`, { method: 'PUT', body: JSON.stringify(cloudData[key]) });
-        }
-
-        async function register() {
+        function register() {
             const user = document.getElementById('reg-user').value.trim();
             const pass = document.getElementById('reg-pass').value.trim();
             const clan = document.getElementById('reg-clan').value;
@@ -324,18 +334,19 @@
             if (!user || !pass) return alert("Completa los datos.");
             if (user.toLowerCase() === 'traco_games' || user.toLowerCase() === 'admin') return alert("Nombre reservado.");
 
-            const res = await fetch(`${FB_URL}users/${user.toLowerCase()}.json`);
-            const exists = await res.json();
-            if (exists) return alert("El usuario ya existe.");
-
-            const newUserObj = { username: user, pass: pass, clan: clan, level: 0, kills: 0 };
-
-            await fetch(`${FB_URL}users/${user.toLowerCase()}.json`, { method: 'PUT', body: JSON.stringify(newUserObj) });
-            alert("¡Cuenta de guerrero creada con éxito!");
-            toggleAuth(false);
+            db.ref('users/' + user.toLowerCase()).once('value', function(snapshot) {
+                if (snapshot.exists()) {
+                    alert("El usuario ya existe.");
+                } else {
+                    const newUserObj = { username: user, pass: pass, clan: clan, level: 0, kills: 0 };
+                    db.ref('users/' + user.toLowerCase()).set(newUserObj);
+                    alert("¡Cuenta de guerrero creada con éxito!");
+                    toggleAuth(false);
+                }
+            });
         }
 
-        async function login() {
+        function login() {
             const userInput = document.getElementById('login-user').value.trim();
             const pass = document.getElementById('login-pass').value.trim();
 
@@ -346,34 +357,30 @@
                 return;
             }
 
-            const res = await fetch(`${FB_URL}users/${userInput.toLowerCase()}.json`);
-            const userData = await res.json();
-
-            if (userData && userData.pass === pass) {
-                sessionStorage.setItem('active_session', userInput.toLowerCase());
-                sessionStorage.setItem('display_name', userData.username);
-                loadInterface();
-            } else {
-                alert("Credenciales incorrectas.");
-            }
+            db.ref('users/' + userInput.toLowerCase()).once('value', function(snapshot) {
+                const userData = snapshot.val();
+                if (userData && userData.pass === pass) {
+                    sessionStorage.setItem('active_session', userInput.toLowerCase());
+                    sessionStorage.setItem('display_name', userData.username);
+                    loadInterface();
+                } else {
+                    alert("Credenciales incorrectas.");
+                }
+            });
         }
 
-        async function changeClanDirectly(newClan) {
+        function changeClanDirectly(newClan) {
             const session = sessionStorage.getItem('active_session');
             if(session === 'guest') return alert("Los visitantes no tienen clan.");
+            
             if(session === 'traco_games') {
-                await fetch(`${FB_URL}users/traco_games/clan.json`, { method: 'PUT', body: JSON.stringify(newClan) });
-                fetchAllCloudData();
+                db.ref('users/traco_games/clan').set(newClan);
                 return;
             }
 
             if(confirm("⚠️ ADVERTENCIA DE TRAICIÓN:\n¿Estás seguro de cambiar de clan? Si te unes a un nuevo clan, perderás todo tu progreso actual. Tu nivel y tus bajas volverán a 0 inmediatamente.")){
-                const updates = { clan: newClan, level: 0, kills: 0 };
-                await fetch(`${FB_URL}users/${session}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
+                db.ref('users/' + session).update({ clan: newClan, level: 0, kills: 0 });
                 alert("Te has cambiado de bando. Tu progreso ha sido reiniciado.");
-                fetchAllCloudData();
-            } else {
-                fetchAllCloudData();
             }
         }
 
@@ -384,6 +391,7 @@
         }
 
         function logout() { sessionStorage.clear(); location.reload(); }
+        
         function toggleAuth(showRegister) {
             document.getElementById('login-form').classList.toggle('hidden', showRegister);
             document.getElementById('register-form').classList.toggle('hidden', !showRegister);
@@ -405,8 +413,7 @@
                 document.getElementById('logout-btn-nav').innerHTML = `<a onclick="logout()" style="color: var(--neon-blue); margin-left:15px;">INICIAR SESIÓN</a>`;
             }
 
-            fetchAllCloudData();
-            setInterval(fetchAllCloudData, 3000);
+            startRealtimeListeners();
             showSection('home');
         }
 
@@ -441,6 +448,7 @@
                 let scoreA = (parseInt(a.kills) || 0) + (parseInt(a.level) || 0) * 10;
                 return scoreB - scoreA;
             });
+
             listElement.innerHTML = sortedUsers.map((user, index) => {
                 const isTraco = user.username.toLowerCase() === 'traco_games';
                 return `<tr class="${isTraco ? 'row-admin-or' : ''}">
@@ -456,7 +464,7 @@
             }).join('');
         }
 
-        async function sendChatMessage() {
+        function sendChatMessage() {
             const session = sessionStorage.getItem('active_session');
             const name = sessionStorage.getItem('display_name');
             const input = document.getElementById('chat-input');
@@ -477,6 +485,7 @@
             let userClan = "Ninguno";
             let dbUser = globalUsersList.find(u => u.username.toLowerCase() === session);
             if(dbUser) userClan = dbUser.clan;
+
             const newMsg = {
                 user: name,
                 clan: userClan,
@@ -485,9 +494,8 @@
                 time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
             };
 
-            await fetch(`${FB_URL}chat.json`, { method: 'POST', body: JSON.stringify(newMsg) });
+            db.ref('chat').push(newMsg);
             input.value = '';
-            fetchAllCloudData();
         }
 
         function renderChat() {
@@ -506,59 +514,85 @@
                     ${isTraco ? `<button class="btn-msg-del" onclick="deleteChatMessage('${m.id}')">X</button>` : ''}
                 </div>`;
             }).join('');
+            box.scrollTop = box.scrollHeight;
         }
 
-        async function deleteChatMessage(msgId) {
+        function deleteChatMessage(msgId) {
             if(!confirm("¿Eliminar mensaje?")) return;
-            await fetch(`${FB_URL}chat/${msgId}.json`, { method: 'DELETE' });
-            fetchAllCloudData();
+            db.ref('chat/' + msgId).remove();
         }
 
-        async function modifyUserStatsAdmin() {
+        function modifyUserStatsAdmin() {
             const targetUser = document.getElementById('adm-user-search').value.trim().toLowerCase();
             const newLvl = parseInt(document.getElementById('adm-user-lvl').value);
             const newKills = parseInt(document.getElementById('adm-user-kills').value);
 
             if(!targetUser || isNaN(newLvl) || isNaN(newKills)) return alert("Completa todos los campos de edición.");
-            const checkRes = await fetch(`${FB_URL}users/${targetUser}.json`);
-            const userExist = await checkRes.json();
-            if(!userExist && targetUser !== 'traco_games') return alert("Ese jugador no existe en la base de datos.");
-            const updates = { level: newLvl, kills: newKills };
-           
-            if(targetUser === 'traco_games') {
-                await fetch(`${FB_URL}users/traco_games.json`, { method: 'PATCH', body: JSON.stringify({username:'Traco_Games', clan:'Dragón', ...updates}) });
-            } else {
-                await fetch(`${FB_URL}users/${targetUser}.json`, { method: 'PATCH', body: JSON.stringify(updates) });
-            }
 
-            alert(`¡Estadísticas de ${targetUser} actualizadas en vivo!`);
-            document.getElementById('adm-user-search').value = '';
-            document.getElementById('adm-user-lvl').value = '';
-            document.getElementById('adm-user-kills').value = '';
-            fetchAllCloudData();
+            db.ref('users/' + targetUser).once('value', function(snapshot) {
+                if(!snapshot.exists() && targetUser !== 'traco_games') {
+                    alert("Ese jugador no existe en la base de datos.");
+                    return;
+                }
+                
+                db.ref('users/' + targetUser).update({ level: newLvl, kills: newKills });
+                alert(`¡Estadísticas de ${targetUser} actualizadas en vivo!`);
+                document.getElementById('adm-user-search').value = '';
+                document.getElementById('adm-user-lvl').value = '';
+                document.getElementById('adm-user-kills').value = '';
+            });
         }
 
         function refreshSiteData() {
             const isTraco = sessionStorage.getItem('active_session') === 'traco_games';
             document.getElementById('play-btn').href = cloudData.config.pvp_game_url || "#";
            
-            document.getElementById('news-container').innerHTML = cloudData.pvp_news.map((n, i) => {
+            document.getElementById('news-container').innerHTML = cloudData.pvp_news.map(n => {
                 if (!n) return ''; if (n.status !== 'publicado' && !isTraco) return '';
                 return `<div class="card"><h3>${n.title}</h3><p>${n.body}</p></div>`;
             }).join('');
-            document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map((c, i) => {
+
+            document.getElementById('classes-container').innerHTML = cloudData.pvp_classes.map(c => {
                 if (!c) return ''; if (c.status !== 'publicado' && !isTraco) return '';
-                return `<div class="card"><h3>${c.name}</h3><p>${c.desc}</p><ul class="ability-list">${c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('')}</ul></div>`;
+                return `<div class="card"><h3>${c.name}</h3><p>${c.desc}</p><ul class="ability-list">${c.skills ? c.skills.split(',').map(s => `<li>${s.trim()}</li>`).join('') : ''}</ul></div>`;
+            }).join('');
+
+            document.getElementById('blog-container').innerHTML = cloudData.pvp_blog.map(b => {
+                if (!b) return ''; if (b.status !== 'publicado' && !isTraco) return '';
+                return `<div class="card"><h3>${b.title}</h3><p>${b.body}</p></div>`;
+            }).join('');
+
+            document.getElementById('gallery-container').innerHTML = cloudData.pvp_gallery.map(g => {
+                if (!g || !g.url) return '';
+                return `<div class="card" style="padding:10px; text-align:center;"><img src="${g.url}" style="max-width:100%; border-radius:8px; display:block; margin:0 auto;"></div>`;
             }).join('');
         }
 
-        async function saveGlobalConfig() {
-            cloudData.config.pvp_game_url = document.getElementById('adm-game-url').value;
-            await syncToFirebase('config'); alert("Link de juego sincronizado."); fetchAllCloudData();
+        function saveGlobalConfig() {
+            const gameUrl = document.getElementById('adm-game-url').value;
+            db.ref('config').set({ pvp_game_url: gameUrl }, function() {
+                alert("Link de juego sincronizado.");
+            });
         }
-        async function saveFormItem(key, obj, editIdxId, status) {
+
+        function saveFormItem(nodeKey, obj, status) {
             obj.status = status;
-            cloudData[key].push(obj); await syncToFirebase(key); fetchAllCloudData(); alert("Contenido guardado.");
+            db.ref(nodeKey).push(obj, function() {
+                alert("Contenido guardado en Firebase.");
+                // Limpiar inputs del formulario
+                if(nodeKey==='pvp_classes') { document.getElementById('c-name').value=''; document.getElementById('c-desc').value=''; document.getElementById('c-skills').value=''; }
+                if(nodeKey==='pvp_news') { document.getElementById('n-title').value=''; document.getElementById('n-body').value=''; }
+                if(nodeKey==='pvp_blog') { document.getElementById('b-title').value=''; document.getElementById('b-body').value=''; }
+            });
+        }
+
+        function saveGalleryItem() {
+            const url = document.getElementById('g-url').value;
+            if(!url) return;
+            db.ref('pvp_gallery').push({ url: url }, function() {
+                alert("Imagen añadida a la galería.");
+                document.getElementById('g-url').value = '';
+            });
         }
 
         window.onload = function() {
